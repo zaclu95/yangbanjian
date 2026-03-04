@@ -1,0 +1,651 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <title>数字化转型样板间</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <!-- Tailwind CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <!-- ECharts CDN -->
+  <script src="https://cdn.jsdelivr.net/npm/echarts@5/dist/echarts.min.js"></script>
+  <style>
+    body {
+      background-color: #050608;
+      color: #ffffff;
+    }
+
+    /* 流动光感背景 */
+    .glow-layer {
+      position: fixed;
+      inset: 0;
+      overflow: hidden;
+      pointer-events: none;
+      z-index: -1;
+    }
+
+    .glow {
+      position: absolute;
+      width: 420px;
+      height: 420px;
+      background: radial-gradient(circle at center, rgba(51, 112, 255, 0.7), transparent 60%);
+      filter: blur(60px);
+      opacity: 0.7;
+    }
+
+    .glow.g1 {
+      top: -80px;
+      left: 8%;
+      animation: moveGlow1 24s ease-in-out infinite alternate;
+    }
+
+    .glow.g2 {
+      top: 40%;
+      right: -120px;
+      animation: moveGlow2 26s ease-in-out infinite alternate;
+    }
+
+    .glow.g3 {
+      bottom: -120px;
+      left: 40%;
+      animation: moveGlow3 30s ease-in-out infinite alternate;
+    }
+
+    @keyframes moveGlow1 {
+      0% { transform: translate3d(0, 0, 0); }
+      100% { transform: translate3d(80px, 60px, 0); }
+    }
+
+    @keyframes moveGlow2 {
+      0% { transform: translate3d(0, 0, 0); }
+      100% { transform: translate3d(-60px, -80px, 0); }
+    }
+
+    @keyframes moveGlow3 {
+      0% { transform: translate3d(0, 0, 0); }
+      100% { transform: translate3d(40px, -40px, 0); }
+    }
+
+    /* 首屏背景：视频 + 磨砂玻璃叠层 */
+    .hero-section {
+      position: relative;
+      overflow: hidden;
+      background: #050608;
+    }
+
+    .hero-bg-video {
+      position: absolute;
+      top: 72px;
+      left: 0;
+      width: 100%;
+      height: calc(100% + 72px);
+      object-fit: cover;
+      object-position: center top;
+      z-index: 0;
+    }
+
+    /* 磨砂玻璃层：抽象流动光影，低透明度 + 强模糊 */
+    .hero-section::before {
+      z-index: 1;
+      content: "";
+      position: absolute;
+      inset: -20%;
+      background:
+        radial-gradient(ellipse 80% 50% at 15% 30%, rgba(59, 130, 246, 0.18), transparent 55%),
+        radial-gradient(ellipse 60% 70% at 85% 20%, rgba(139, 92, 246, 0.16), transparent 50%),
+        radial-gradient(ellipse 70% 40% at 70% 80%, rgba(194, 65, 12, 0.14), transparent 50%),
+        radial-gradient(ellipse 50% 60% at 30% 70%, rgba(30, 58, 138, 0.15), transparent 55%),
+        radial-gradient(ellipse 90% 50% at 50% 50%, rgba(88, 28, 135, 0.1), transparent 60%);
+      filter: blur(160px);
+      -webkit-filter: blur(160px);
+      pointer-events: none;
+      animation: heroFrostShift 20s ease-in-out infinite alternate;
+    }
+    @keyframes heroFrostShift {
+      0% { transform: scale(1) translate(0, 0); opacity: 1; }
+      100% { transform: scale(1.08) translate(2%, 1%); opacity: 0.95; }
+    }
+
+    /* 毛玻璃层：半透明 + 背景模糊，参考 Veltrix 截图 */
+    .hero-section::after {
+      content: "";
+      position: absolute;
+      inset: 0;
+      z-index: 1;
+      background: rgba(5, 6, 8, 0.28);
+      backdrop-filter: blur(28px) saturate(120%);
+      -webkit-backdrop-filter: blur(28px) saturate(120%);
+      pointer-events: none;
+    }
+
+    .hero-inner {
+      position: relative;
+      z-index: 2;
+    }
+
+    /* 右侧竖排文案 */
+    .vertical-copy {
+      writing-mode: vertical-rl;
+      text-orientation: mixed;
+      letter-spacing: 0.22em;
+    }
+
+    /* 地图容器兜底高度（避免 Tailwind 样式未加载时高度塌陷） */
+    #china-map {
+      min-height: 420px;
+    }
+
+    /* iOS 27 Liquid Glass 质感按钮 */
+    .btn-liquid-glass {
+      background: rgba(255, 255, 255, 0.14);
+      backdrop-filter: blur(20px) saturate(180%);
+      -webkit-backdrop-filter: blur(20px) saturate(180%);
+      border: 0.5px solid rgba(255, 255, 255, 0.28);
+      box-shadow:
+        0 0 0 1px rgba(255, 255, 255, 0.08) inset,
+        0 4px 16px rgba(0, 0, 0, 0.2);
+      color: #fff;
+      transition: background 0.25s ease, border-color 0.25s ease, box-shadow 0.25s ease;
+    }
+    .btn-liquid-glass:hover {
+      background: rgba(255, 255, 255, 0.22);
+      border-color: rgba(255, 255, 255, 0.4);
+      box-shadow:
+        0 0 0 1px rgba(255, 255, 255, 0.12) inset,
+        0 6px 20px rgba(0, 0, 0, 0.25);
+    }
+
+    /* Header Feishu 标签阴影（浏览器预览同步） */
+    .header-feishu {
+      box-shadow: 0px 4px 12px 0px rgba(0, 0, 0, 0.15);
+    }
+
+    /* 导航栏毛玻璃底 */
+    .header-glass {
+      background: rgba(5, 6, 8, 0.55);
+      backdrop-filter: blur(12px) saturate(180%);
+      -webkit-backdrop-filter: blur(12px) saturate(180%);
+      border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+    }
+
+    /* 样板间 LOGO 从左到右持续循环滑动 */
+    .logo-marquee-wrap {
+      overflow: hidden;
+      width: 100%;
+    }
+    .logo-marquee-track {
+      display: flex;
+      flex-wrap: nowrap;
+      gap: 2rem;
+      width: max-content;
+      animation: logo-marquee 26.4s linear infinite;
+    }
+    .logo-marquee-track:hover {
+      animation-play-state: paused;
+    }
+    .logo-marquee-item {
+      flex-shrink: 0;
+      height: 2.25rem;
+      min-width: 6rem;
+      opacity: 0.6;
+      background: rgba(255, 255, 255, 0.05);
+      border-radius: 0.25rem;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 11px;
+      letter-spacing: 0.05em;
+    }
+    @keyframes logo-marquee {
+      0% { transform: translateX(-50%); }
+      100% { transform: translateX(0); }
+    }
+
+    /* 地图右侧：深色面板（无边框，点击地图点位后打开） */
+    .map-case-panel {
+      background: rgba(13, 18, 25, 0.96);
+      backdrop-filter: blur(20px);
+      -webkit-backdrop-filter: blur(20px);
+      border-radius: 1rem;
+      box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4);
+      transition: transform 0.25s ease, opacity 0.25s ease;
+    }
+    .map-case-panel.is-closed {
+      transform: translateX(calc(100% + 1.5rem));
+      pointer-events: none;
+      opacity: 0;
+    }
+    /* 面板内案例卡片：无边框，填满面板 */
+    .map-case-card {
+      background: linear-gradient(to bottom right, rgba(20, 86, 240, 0.08), #0a0e14);
+    }
+  </style>
+</head>
+<body class="min-h-screen overflow-x-hidden">
+  <!-- 流动光感背景层 -->
+  <div class="glow-layer">
+    <div class="glow g1"></div>
+    <div class="glow g2"></div>
+    <div class="glow g3"></div>
+  </div>
+
+  <!-- 顶部导航（毛玻璃底） -->
+  <header class="header-glass fixed top-0 inset-x-0 z-30">
+    <div class="mx-auto max-w-6xl px-6 py-5 flex items-center justify-between text-xs md:text-sm text-white/70">
+      <div class="flex items-center gap-3">
+        <span class="header-feishu text-xs uppercase tracking-[0.2em] text-white/60">飞书</span>
+        <span class="h-0.5 w-6 bg-white/20 rounded-full"></span>
+        <span class="text-xs text-white/70">先进团队  先用飞书</span>
+      </div>
+      <nav class="hidden md:flex items-center gap-8">
+        <button class="hover:text-white transition-colors">首页</button>
+        <button class="hover:text-white transition-colors">精选好房</button>
+        <button class="hover:text-white transition-colors">案例合集</button>
+        <button class="hover:text-white transition-colors inline-flex items-center gap-2">
+          <svg class="w-4 h-4 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M9.813 15.904L9 18.75l-.813-2.846a4.5 4.5 0 00-3.09-3.09L2.25 12l2.846-.813a4.5 4.5 0 003.09-3.09L9 5.25l.813 2.846a4.5 4.5 0 003.09 3.09L15.75 12l-2.846.813a4.5 4.5 0 00-3.09 3.09zM18.259 8.715L18 9.75l-.259-1.035a3.375 3.375 0 00-2.455-2.456L14.25 6l1.036-.259a3.375 3.375 0 002.455-2.456L18 2.25l.259 1.035a3.375 3.375 0 002.456 2.456L21.75 6l-1.035.259a3.375 3.375 0 00-2.456 2.456zM16.894 20.567L16.5 21.75l-.394-1.183a2.25 2.25 0 00-1.423-1.423L13.5 18.75l1.183-.394a2.25 2.25 0 001.423-1.423l.394-1.183.394 1.183a2.25 2.25 0 001.423 1.423l1.183.394-1.183.394a2.25 2.25 0 00-1.423 1.423z" />
+          </svg>
+          问问AI
+        </button>
+        <button class="hover:text-white transition-colors inline-flex items-center gap-2">
+          <svg class="w-4 h-4 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M2.25 6.75c0 8.284 6.716 15 15 15h2.25a2.25 2.25 0 002.25-2.25v-1.372c0-.516-.351-.966-.852-1.091l-4.423-1.106c-.44-.11-.902.055-1.173.417l-.97 1.293c-.282.376-.769.542-1.21.38a11.285 11.285 0 01-6.697-6.697c-.162-.441.004-.928.38-1.21l1.293-.97c.363-.271.527-.734.417-1.173L6.963 3.102a1.125 1.125 0 00-1.091-.852H4.5A2.25 2.25 0 002.25 4.5v2.25z" />
+          </svg>
+          联系我们
+        </button>
+      </nav>
+    </div>
+  </header>
+
+  <!-- 页面主体 -->
+  <main class="relative">
+    <!-- Hero：Veltrix 风格大字版式 -->
+    <section class="hero-section min-h-[90vh] flex items-center">
+      <video class="hero-bg-video" autoplay muted loop playsinline>
+        <source src="assets/hero-bg_飞书动态效果.mp4" type="video/mp4" />
+      </video>
+      <div class="hero-inner mx-auto max-w-6xl px-6 w-full flex gap-10 md:gap-16">
+        <!-- 左侧主文案 -->
+        <div class="flex-1 pt-28 pb-20 flex flex-col justify-center">
+          <div class="space-y-6 md:space-y-10 leading-none">
+            <div class="text-[32px] md:text-[44px] lg:text-[56px] font-bold tracking-tight text-white">
+              飞书城市样板间
+            </div>
+            <div class="text-xl md:text-2xl lg:text-3xl font-normal tracking-tight text-white/80 max-w-2xl">
+              在飞书，看见先进组织的运行模板。
+            </div>
+          </div>
+          <p class="mt-6 max-w-xl text-sm md:text-base text-white/65">
+            探索各行业领先企业如何借助飞书实现数字化转型——从组织协同、业务流程到数据决策，
+            让你的团队在深色丝绸般的科技氛围中，看到可复制的「样板间标准答案」。
+          </p>
+
+          <div class="mt-8 flex flex-wrap items-center gap-8">
+            <button
+              class="btn-liquid-glass rounded-full text-sm px-5 py-2.5 font-medium tracking-wide">
+              参观精选好房
+            </button>
+            <button
+              class="btn-liquid-glass rounded-full text-sm px-5 py-2.5 font-medium tracking-wide">
+              前往案例合集
+            </button>
+          </div>
+        </div>
+
+        <!-- 右侧指标 -->
+        <div class="hidden md:flex flex-none items-center justify-end gap-10 pt-28 pb-20">
+          <div class="h-52 w-px bg-gradient-to-b from-white/0 via-white/35 to-white/0"></div>
+          <div class="flex flex-col gap-6 text-right text-xs text-white/60">
+            <div>
+              <div class="text-3xl font-semibold text-white">21+</div>
+              <div class="mt-1">沉淀企业数字化样板间案例</div>
+            </div>
+            <div>
+              <div class="text-3xl font-semibold text-white">10+</div>
+              <div class="mt-1">覆盖制造、零售、科技等核心行业</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Trusted by 区域 -->
+    <section class="border-t border-white/5 bg-black py-10 md:py-12">
+      <div class="mx-auto max-w-6xl px-6 flex flex-col gap-6">
+        <div class="text-xs md:text-sm text-white/40 uppercase tracking-[0.25em]">
+          样板间LOGO
+        </div>
+        <div class="logo-marquee-wrap">
+          <div class="logo-marquee-track">
+            <div class="logo-marquee-item">LOGO 01</div>
+            <div class="logo-marquee-item">LOGO 02</div>
+            <div class="logo-marquee-item">LOGO 03</div>
+            <div class="logo-marquee-item">LOGO 04</div>
+            <div class="logo-marquee-item">LOGO 05</div>
+            <div class="logo-marquee-item">LOGO 06</div>
+            <div class="logo-marquee-item">LOGO 07</div>
+            <div class="logo-marquee-item">LOGO 08</div>
+            <div class="logo-marquee-item">LOGO 09</div>
+            <div class="logo-marquee-item">LOGO 10</div>
+            <div class="logo-marquee-item">LOGO 01</div>
+            <div class="logo-marquee-item">LOGO 02</div>
+            <div class="logo-marquee-item">LOGO 03</div>
+            <div class="logo-marquee-item">LOGO 04</div>
+            <div class="logo-marquee-item">LOGO 05</div>
+            <div class="logo-marquee-item">LOGO 06</div>
+            <div class="logo-marquee-item">LOGO 07</div>
+            <div class="logo-marquee-item">LOGO 08</div>
+            <div class="logo-marquee-item">LOGO 09</div>
+            <div class="logo-marquee-item">LOGO 10</div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- 地图区：ECharts 动态点亮 -->
+    <section class="bg-[#050608] py-16 md:py-20 border-t border-white/5">
+      <div class="mx-auto max-w-6xl px-6 space-y-8">
+        <div class="flex flex-col md:flex-row md:items-end md:justify-between gap-4">
+          <div>
+            <p class="text-xs uppercase tracking-[0.25em] text-white/45 mb-3">
+              DIGITAL FOOTPRINT · CHINA
+            </p>
+            <h2 class="text-2xl md:text-3xl font-semibold tracking-tight">
+              客户数字化足迹，点亮全国样板间
+            </h2>
+            <p class="mt-3 text-[14px] text-white/65 max-w-xl">
+              通过飞书连接总部与全国分支机构，让每一个被点亮的坐标，都代表一间真实的数字化转型样板间。
+            </p>
+          </div>
+        </div>
+
+        <div class="mt-4 relative rounded-3xl overflow-hidden bg-[#0d1219] p-3 md:p-5">
+          <div id="china-map" class="w-full h-[420px] md:h-[480px] rounded-2xl"></div>
+          <aside id="map-case-panel" class="map-case-panel is-closed absolute right-4 top-4 bottom-4 w-72 md:w-80 flex flex-col rounded-2xl overflow-hidden">
+            <div class="px-4 py-2.5 border-b border-white/10 bg-white/5 flex items-center justify-between">
+              <p class="text-[11px] uppercase tracking-[0.2em] text-white/50">选中案例</p>
+              <button type="button" id="map-case-panel-close" class="p-1.5 rounded-full text-white/60 hover:text-white hover:bg-white/10 transition" aria-label="关闭">✕</button>
+            </div>
+            <div id="map-case-card" class="map-case-card flex flex-col flex-1 min-h-0 overflow-hidden">
+              <div id="case-card-cover" class="w-full aspect-[16/10] flex-shrink-0 bg-white/5 overflow-hidden">
+                <img id="case-card-cover-img" src="" alt="" class="w-full h-full object-cover hidden" />
+              </div>
+              <div class="p-4 flex flex-col gap-3 flex-1 min-h-0">
+              <div id="case-card-placeholder" class="text-sm text-white/45 py-8 text-center">
+                点击地图上的点位查看案例
+              </div>
+              <div id="case-card-content" class="hidden flex flex-col gap-3">
+                <div class="flex items-start justify-between gap-3">
+                  <div class="flex items-center gap-3 min-w-0 flex-1">
+                    <div class="h-10 w-10 rounded-full bg-[#1456F0]/30 border border-[#1456F0]/50 flex items-center justify-center text-white/90 shrink-0">
+                      <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M21 13.255A23.931 23.931 0 0112 15c-3.183 0-6.22-.62-9-1.745M16 6V4a2 2 0 00-2-2h-4a2 2 0 00-2 2v2m4 6h.01M5 20h14a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" /></svg>
+                    </div>
+                    <div class="min-w-0">
+                      <p id="case-card-location" class="text-[11px] text-white/50">Location</p>
+                      <h3 id="case-card-title" class="text-base font-semibold text-white truncate"></h3>
+                    </div>
+                  </div>
+                  <span id="case-card-industry" class="text-xs px-2.5 py-1 rounded-full bg-[#1456F0]/25 text-white/90 border border-[#1456F0]/40 shrink-0"></span>
+                </div>
+                <p id="case-card-customer" class="text-xs text-white/65"></p>
+                <p id="case-card-theme" class="text-xs text-white/50"></p>
+                <button type="button" class="mt-1 rounded-full bg-[#1456F0] px-4 py-2 text-sm text-white font-medium hover:bg-[#336DF4] transition w-fit">
+                  前往参观
+                </button>
+              </div>
+              </div>
+            </div>
+          </aside>
+        </div>
+      </div>
+    </section>
+
+    <!-- 精选样板间：Our selected works 风格 -->
+    <section class="bg-black py-18 md:py-20 border-t border-white/5">
+      <div class="mx-auto max-w-6xl px-6 space-y-10">
+        <div>
+          <p class="text-xs uppercase tracking-[0.25em] text-white/45 mb-3">
+            OUR SELECTED SHOWROOMS
+          </p>
+          <h2 class="text-2xl md:text-3xl font-semibold tracking-tight">
+            每月上新 · 精选数字化「好房」
+          </h2>
+          <p class="mt-3 text-sm text-white/65 max-w-2xl">
+            将高价值数字化转型案例包装为可参观、可对标的「样板间好房」，按行业、城市与转型主题呈现，
+            帮助你快速找到最接近自身阶段的路径参考。
+          </p>
+        </div>
+
+        <!-- 第一行：大图 + 重点案例 -->
+        <div class="grid md:grid-cols-2 gap-6 md:gap-8 items-stretch">
+          <div class="rounded-3xl border border-white/10 overflow-hidden bg-gradient-to-br from-[#1456F0]/10 to-[#08090c]">
+            <div class="aspect-[16/10] w-full bg-white/5"></div>
+            <div class="px-6 py-4 border-t border-white/10 flex items-center justify-between">
+              <div>
+                <div class="font-medium text-sm text-white">制造业 · 华东 · 样板工厂</div>
+                <div class="mt-0.5 text-[11px] text-white/60">
+                  以飞书为核心的全球协同生产与项目管理中台。
+                </div>
+              </div>
+              <span class="text-[11px] text-white/50 px-2.5 py-1 rounded-full border border-[#1456F0]/40 text-white/80">Feishu Inside</span>
+            </div>
+          </div>
+
+          <article
+            class="relative flex flex-col rounded-3xl border border-white/10 bg-gradient-to-br from-[#1456F0]/12 via-black to-black p-5 md:p-6">
+            <div class="mb-3 flex items-center gap-2 text-[11px] text-white/65">
+              <span class="rounded-full border border-white/30 px-2 py-0.5 text-[10px] uppercase tracking-[0.18em]">
+                Featured
+              </span>
+              <span>制造业</span>
+              <span>华东 · 苏州</span>
+            </div>
+            <div class="flex items-center gap-2 text-xs text-white/60 mb-2">
+              <div class="h-6 w-6 rounded-full border border-white/30 flex items-center justify-center text-[9px]">
+                Logo
+              </div>
+              <span>某高端装备龙头 · 全球工厂集群</span>
+            </div>
+            <h3 class="text-base md:text-lg font-semibold mt-1">
+              全球协同生产与项目管理一体化升级样板间
+            </h3>
+            <p class="mt-3 text-xs md:text-sm text-white/65">
+              打通飞书多维表格、项目与流程审批，实现跨工厂排产协同、质量闭环管理与跨时区项目透明协作。
+            </p>
+            <div class="mt-4 flex flex-wrap gap-2 text-[11px] text-white/55">
+              <span class="px-2 py-1 rounded-full border border-white/20">多工厂协同</span>
+              <span class="px-2 py-1 rounded-full border border-white/20">MES × 飞书</span>
+              <span class="px-2 py-1 rounded-full border border-white/20">全球项目管理</span>
+            </div>
+            <div class="mt-auto pt-5">
+              <button
+                class="inline-flex items-center gap-2 rounded-full px-4 py-2 text-xs md:text-sm text-white bg-[#1456F0] border border-[#1456F0] hover:bg-[#336DF4] hover:border-[#336DF4] transition">
+                立即参观样板间
+                <span class="text-[11px]">↗</span>
+              </button>
+            </div>
+          </article>
+        </div>
+
+        <!-- 第二行：What we offer 风格的 4 卡片 -->
+        <div class="mt-4 grid md:grid-cols-4 gap-4 md:gap-5 text-sm">
+          <article class="rounded-2xl border border-white/10 bg-gradient-to-br from-[#1456F0]/10 to-[#08090c] p-4 md:p-5 flex flex-col gap-3">
+            <h3 class="text-sm md:text-base font-semibold">总部协同中台</h3>
+            <p class="text-xs text-white/65">
+              用飞书连接集团总部与区域分公司，实现 OKR 对齐、项目透明与跨团队高频同步。
+            </p>
+          </article>
+          <article class="rounded-2xl border border-white/10 bg-gradient-to-br from-[#1456F0]/10 to-[#08090c] p-4 md:p-5 flex flex-col gap-3">
+            <h3 class="text-sm md:text-base font-semibold">门店与一线运营</h3>
+            <p class="text-xs text-white/65">
+              通过机器人与多维表格采集一线数据，沉淀运营驾驶舱与活动复盘模板。
+            </p>
+          </article>
+          <article class="rounded-2xl border border-white/10 bg-gradient-to-br from-[#1456F0]/10 to-[#08090c] p-4 md:p-5 flex flex-col gap-3">
+            <h3 class="text-sm md:text-base font-semibold">研发与项目协同</h3>
+            <p class="text-xs text-white/65">
+              以飞书文档、项目与知识库构建端到端研发协同与知识沉淀体系。
+            </p>
+          </article>
+          <article class="rounded-2xl border border-white/10 bg-gradient-to-br from-[#1456F0]/10 to-[#08090c] p-4 md:p-5 flex flex-col gap-3">
+            <h3 class="text-sm md:text-base font-semibold">管理仪表盘与决策</h3>
+            <p class="text-xs text-white/65">
+              将分散系统数据汇总到飞书，搭建管理视角的多维仪表盘与提醒机制。
+            </p>
+          </article>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <!-- ECharts 逻辑 -->
+  <script>
+    const customerPoints = [
+      { name: '北京', value: [116.40, 39.90], industry: '互联网 / 科技', customer: '某云服务独角兽', theme: '研发效能中台' },
+      { name: '上海', value: [121.47, 31.23], industry: '制造业', customer: '某智能制造集团', theme: '全球协同供应链' },
+      { name: '广州', value: [113.27, 23.13], industry: '零售连锁', customer: '全国连锁新消费品牌', theme: '门店运营驾驶舱' },
+      { name: '深圳', value: [114.05, 22.55], industry: '高科技制造', customer: '某电子龙头', theme: '工厂数字化车间' },
+      { name: '杭州', value: [120.19, 30.26], industry: '互联网 / 科技', customer: '某电商平台', theme: '跨团队敏捷协同' },
+      { name: '成都', value: [104.06, 30.67], industry: '消费品', customer: '某新锐品牌', theme: '全渠道拉通与共创' },
+      { name: '苏州', value: [120.62, 31.32], industry: '制造业', customer: '某高端装备龙头', theme: '项目与生产一体化' },
+      { name: '武汉', value: [114.31, 30.52], industry: '教育 / 医疗', customer: '区域龙头机构', theme: '运营与服务协同' },
+    ];
+
+    function createChinaMapOption(geoJson) {
+      return {
+        backgroundColor: '#0d1219',
+        tooltip: {
+          trigger: 'item',
+          backgroundColor: 'rgba(13, 18, 25, 0.96)',
+          borderColor: '#1456F0',
+          borderWidth: 1,
+          textStyle: { color: '#e5e7eb', fontSize: 12 },
+          formatter: function (params) {
+            if (params.seriesType === 'effectScatter' && params.data) {
+              const d = params.data;
+              return [
+                `<div style="font-weight:600;margin-bottom:4px;">${d.customer || d.name}</div>`,
+                `<div style="font-size:11px;opacity:.8;">${d.industry || ''}</div>`,
+                d.theme ? `<div style="font-size:11px;margin-top:4px;">${d.theme}</div>` : ''
+              ].join('');
+            }
+            return params.name || '';
+          }
+        },
+        geo: {
+          map: 'china',
+          roam: true,
+          zoom: 1.1,
+          layoutCenter: ['38%', '50%'],
+          layoutSize: '100%',
+          label: {
+            show: true,
+            color: 'rgba(226, 232, 240, 0.7)',
+            fontSize: 10
+          },
+          itemStyle: {
+            areaColor: '#151c28',
+            borderColor: '#2d3748',
+            borderWidth: 0.8
+          },
+          emphasis: {
+            itemStyle: {
+              areaColor: '#1e293b',
+              borderColor: '#3d4a5c'
+            },
+            label: { color: '#e2e8f0' }
+          },
+          regions: [
+            { name: '北京', itemStyle: { areaColor: 'rgba(20, 86, 240, 0.38)', borderColor: 'rgba(20, 86, 240, 0.7)', borderWidth: 1.2 } },
+            { name: '北京市', itemStyle: { areaColor: 'rgba(20, 86, 240, 0.38)', borderColor: 'rgba(20, 86, 240, 0.7)', borderWidth: 1.2 } },
+            { name: '上海', itemStyle: { areaColor: 'rgba(20, 86, 240, 0.38)', borderColor: 'rgba(20, 86, 240, 0.7)', borderWidth: 1.2 } },
+            { name: '上海市', itemStyle: { areaColor: 'rgba(20, 86, 240, 0.38)', borderColor: 'rgba(20, 86, 240, 0.7)', borderWidth: 1.2 } },
+            { name: '广东省', itemStyle: { areaColor: 'rgba(20, 86, 240, 0.38)', borderColor: 'rgba(20, 86, 240, 0.7)', borderWidth: 1.2 } },
+            { name: '浙江省', itemStyle: { areaColor: 'rgba(20, 86, 240, 0.38)', borderColor: 'rgba(20, 86, 240, 0.7)', borderWidth: 1.2 } },
+            { name: '四川省', itemStyle: { areaColor: 'rgba(20, 86, 240, 0.38)', borderColor: 'rgba(20, 86, 240, 0.7)', borderWidth: 1.2 } },
+            { name: '江苏省', itemStyle: { areaColor: 'rgba(20, 86, 240, 0.38)', borderColor: 'rgba(20, 86, 240, 0.7)', borderWidth: 1.2 } },
+            { name: '湖北省', itemStyle: { areaColor: 'rgba(20, 86, 240, 0.38)', borderColor: 'rgba(20, 86, 240, 0.7)', borderWidth: 1.2 } }
+          ]
+        },
+        series: [
+          {
+            name: '样板间分布',
+            type: 'effectScatter',
+            coordinateSystem: 'geo',
+            data: customerPoints,
+            symbolSize: 8,
+            showEffectOn: 'render',
+            rippleEffect: {
+              brushType: 'stroke',
+              color: '#1456F0',
+              scale: 3.5
+            },
+            itemStyle: {
+              color: '#1456F0',
+              borderColor: 'rgba(255,255,255,0.4)',
+              borderWidth: 1,
+              shadowBlur: 12,
+              shadowColor: 'rgba(20, 86, 240, 0.5)'
+            },
+            hoverAnimation: true,
+            animationDuration: 2000,
+            animationDelay: function (idx) {
+              return idx * 200;
+            },
+            zlevel: 2
+          }
+        ]
+      };
+    }
+
+    (function initChinaMap() {
+      const container = document.getElementById('china-map');
+      if (!container || typeof echarts === 'undefined') return;
+
+      const chart = echarts.init(container);
+
+      window.addEventListener('resize', function () {
+        chart.resize();
+      });
+
+      fetch('https://geo.datav.aliyun.com/areas_v3/bound/geojson?code=100000_full')
+        .then(function (res) { return res.json(); })
+        .then(function (geoJson) {
+          echarts.registerMap('china', geoJson);
+          const option = createChinaMapOption(geoJson);
+          chart.setOption(option);
+
+          var panel = document.getElementById('map-case-panel');
+          var closeBtn = document.getElementById('map-case-panel-close');
+          if (closeBtn) closeBtn.addEventListener('click', function () {
+            if (panel) panel.classList.add('is-closed');
+          });
+
+          var placeholder = document.getElementById('case-card-placeholder');
+          var content = document.getElementById('case-card-content');
+          var locationEl = document.getElementById('case-card-location');
+          var titleEl = document.getElementById('case-card-title');
+          var industryEl = document.getElementById('case-card-industry');
+          var customerEl = document.getElementById('case-card-customer');
+          var themeEl = document.getElementById('case-card-theme');
+
+          chart.on('click', function (params) {
+            if (params.seriesType === 'effectScatter' && params.data) {
+              var d = params.data;
+              if (panel) panel.classList.remove('is-closed');
+              if (placeholder) placeholder.classList.add('hidden');
+              if (content) content.classList.remove('hidden');
+              if (locationEl) locationEl.textContent = d.name || 'Location';
+              if (titleEl) titleEl.textContent = (d.theme || d.name) + '';
+              if (industryEl) industryEl.textContent = d.industry || '';
+              if (customerEl) customerEl.textContent = d.customer || '';
+              if (themeEl) themeEl.textContent = d.theme ? '主题：' + d.theme : '';
+            }
+          });
+        })
+        .catch(function (err) {
+          console.error('加载中国地图数据失败:', err);
+        });
+    })();
+  </script>
+</body>
+</html>
