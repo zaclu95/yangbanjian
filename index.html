@@ -111,7 +111,7 @@
       position: absolute;
       inset: 0;
       z-index: 1;
-      background: rgba(5, 6, 8, 0.28);
+      background: rgba(5, 6, 8, 0.12);
       backdrop-filter: blur(28px) saturate(120%);
       -webkit-backdrop-filter: blur(28px) saturate(120%);
       pointer-events: none;
@@ -152,6 +152,64 @@
       box-shadow:
         0 0 0 1px rgba(255, 255, 255, 0.12) inset,
         0 6px 20px rgba(0, 0, 0, 0.25);
+    }
+
+    /* 卡片 Liquid Glass：动态折射、边缘高光、深度悬浮、视差 */
+    .card-liquid-glass {
+      position: relative;
+      overflow: hidden;
+      transition: transform 0.35s cubic-bezier(0.2, 0, 0, 1), box-shadow 0.35s ease, border-color 0.35s ease;
+      --mouse-x: 50%;
+      --mouse-y: 50%;
+      --mouse-x-px: 0px;
+      --mouse-y-px: 0px;
+    }
+    .card-liquid-glass::before {
+      content: "";
+      position: absolute;
+      inset: 0;
+      border-radius: inherit;
+      pointer-events: none;
+      background: rgba(255, 255, 255, 0.04);
+      backdrop-filter: blur(14px) saturate(140%);
+      -webkit-backdrop-filter: blur(14px) saturate(140%);
+      opacity: 0;
+      transition: opacity 0.35s ease;
+      z-index: 1;
+    }
+    .card-liquid-glass::after {
+      content: "";
+      position: absolute;
+      inset: -1px;
+      border-radius: inherit;
+      pointer-events: none;
+      background: radial-gradient(
+        420px circle at var(--mouse-x) var(--mouse-y),
+        rgba(255, 255, 255, 0.08) 0%,
+        rgba(255, 255, 255, 0.03) 25%,
+        transparent 50%
+      );
+      opacity: 0;
+      transition: opacity 0.3s ease;
+      z-index: 0;
+    }
+    .card-liquid-glass:hover {
+      transform: scale(1.02);
+      box-shadow:
+        0 0 0 1px rgba(255, 255, 255, 0.12),
+        0 24px 48px -12px rgba(0, 0, 0, 0.45),
+        0 12px 24px -8px rgba(0, 0, 0, 0.3);
+      border-color: rgba(255, 255, 255, 0.18);
+    }
+    .card-liquid-glass:hover::before,
+    .card-liquid-glass:hover::after {
+      opacity: 1;
+    }
+    .card-liquid-glass > * {
+      position: relative;
+      z-index: 2;
+      transition: transform 0.25s cubic-bezier(0.2, 0, 0, 1);
+      transform: translate(var(--mouse-x-px), var(--mouse-y-px));
     }
 
     /* Header Feishu 标签阴影（浏览器预览同步） */
@@ -275,8 +333,7 @@
             </div>
           </div>
           <p class="mt-6 max-w-xl text-sm md:text-base text-white/65">
-            探索各行业领先企业如何借助飞书实现数字化转型——从组织协同、业务流程到数据决策，
-            让你的团队在深色丝绸般的科技氛围中，看到可复制的「样板间标准答案」。
+            探索各行业领先企业如何通过飞书重塑增长——从深敏的组织协同到全链路的自动化决策，为您呈现一套实景化、可复刻的「数字化样板间」。
           </p>
 
           <div class="mt-8 flex flex-wrap items-center gap-8">
@@ -417,7 +474,7 @@
 
         <!-- 第一行：大图 + 重点案例 -->
         <div class="grid md:grid-cols-2 gap-6 md:gap-8 items-stretch">
-          <div class="rounded-3xl border border-white/10 overflow-hidden bg-gradient-to-br from-[#1456F0]/10 to-[#08090c]">
+          <div class="card-liquid-glass rounded-3xl border border-white/10 overflow-hidden bg-gradient-to-br from-[#1456F0]/10 to-[#08090c]">
             <div class="aspect-[16/10] w-full bg-white/5"></div>
             <div class="px-6 py-4 border-t border-white/10 flex items-center justify-between">
               <div>
@@ -431,7 +488,7 @@
           </div>
 
           <article
-            class="relative flex flex-col rounded-3xl border border-white/10 bg-gradient-to-br from-[#1456F0]/12 via-black to-black p-5 md:p-6">
+            class="card-liquid-glass relative flex flex-col rounded-3xl border border-white/10 bg-gradient-to-br from-[#1456F0]/12 via-black to-black p-5 md:p-6">
             <div class="mb-3 flex items-center gap-2 text-[11px] text-white/65">
               <span class="rounded-full border border-white/30 px-2 py-0.5 text-[10px] uppercase tracking-[0.18em]">
                 Featured
@@ -468,25 +525,25 @@
 
         <!-- 第二行：What we offer 风格的 4 卡片 -->
         <div class="mt-4 grid md:grid-cols-4 gap-4 md:gap-5 text-sm">
-          <article class="rounded-2xl border border-white/10 bg-gradient-to-br from-[#1456F0]/10 to-[#08090c] p-4 md:p-5 flex flex-col gap-3">
+          <article class="card-liquid-glass rounded-2xl border border-white/10 bg-gradient-to-br from-[#1456F0]/10 to-[#08090c] p-4 md:p-5 flex flex-col gap-3">
             <h3 class="text-sm md:text-base font-semibold">总部协同中台</h3>
             <p class="text-xs text-white/65">
               用飞书连接集团总部与区域分公司，实现 OKR 对齐、项目透明与跨团队高频同步。
             </p>
           </article>
-          <article class="rounded-2xl border border-white/10 bg-gradient-to-br from-[#1456F0]/10 to-[#08090c] p-4 md:p-5 flex flex-col gap-3">
+          <article class="card-liquid-glass rounded-2xl border border-white/10 bg-gradient-to-br from-[#1456F0]/10 to-[#08090c] p-4 md:p-5 flex flex-col gap-3">
             <h3 class="text-sm md:text-base font-semibold">门店与一线运营</h3>
             <p class="text-xs text-white/65">
               通过机器人与多维表格采集一线数据，沉淀运营驾驶舱与活动复盘模板。
             </p>
           </article>
-          <article class="rounded-2xl border border-white/10 bg-gradient-to-br from-[#1456F0]/10 to-[#08090c] p-4 md:p-5 flex flex-col gap-3">
+          <article class="card-liquid-glass rounded-2xl border border-white/10 bg-gradient-to-br from-[#1456F0]/10 to-[#08090c] p-4 md:p-5 flex flex-col gap-3">
             <h3 class="text-sm md:text-base font-semibold">研发与项目协同</h3>
             <p class="text-xs text-white/65">
               以飞书文档、项目与知识库构建端到端研发协同与知识沉淀体系。
             </p>
           </article>
-          <article class="rounded-2xl border border-white/10 bg-gradient-to-br from-[#1456F0]/10 to-[#08090c] p-4 md:p-5 flex flex-col gap-3">
+          <article class="card-liquid-glass rounded-2xl border border-white/10 bg-gradient-to-br from-[#1456F0]/10 to-[#08090c] p-4 md:p-5 flex flex-col gap-3">
             <h3 class="text-sm md:text-base font-semibold">管理仪表盘与决策</h3>
             <p class="text-xs text-white/65">
               将分散系统数据汇总到飞书，搭建管理视角的多维仪表盘与提醒机制。
@@ -645,6 +702,29 @@
         .catch(function (err) {
           console.error('加载中国地图数据失败:', err);
         });
+    })();
+  </script>
+  <script>
+    (function () {
+      var cards = document.querySelectorAll('.card-liquid-glass');
+      var parallaxStrength = 10;
+      cards.forEach(function (card) {
+        card.addEventListener('mousemove', function (e) {
+          var rect = card.getBoundingClientRect();
+          var x = (e.clientX - rect.left) / rect.width;
+          var y = (e.clientY - rect.top) / rect.height;
+          card.style.setProperty('--mouse-x', (x * 100) + '%');
+          card.style.setProperty('--mouse-y', (y * 100) + '%');
+          card.style.setProperty('--mouse-x-px', ((x - 0.5) * parallaxStrength) + 'px');
+          card.style.setProperty('--mouse-y-px', ((y - 0.5) * parallaxStrength) + 'px');
+        });
+        card.addEventListener('mouseleave', function () {
+          card.style.setProperty('--mouse-x', '50%');
+          card.style.setProperty('--mouse-y', '50%');
+          card.style.setProperty('--mouse-x-px', '0px');
+          card.style.setProperty('--mouse-y-px', '0px');
+        });
+      });
     })();
   </script>
 </body>
