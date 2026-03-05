@@ -82,10 +82,10 @@
 
     .hero-bg-video {
       position: absolute;
-      top: 72px;
+      top: 0;
       left: 0;
       width: 100%;
-      height: calc(100% + 72px);
+      height: 100%;
       object-fit: cover;
       object-position: center top;
       z-index: 0;
@@ -463,8 +463,8 @@
         gap: 2.5rem;
       }
       .hero-bg-video {
-        top: 56px;
-        height: calc(100% + 56px);
+        top: 0;
+        height: 100%;
       }
 
       /* LOGO 跑马灯：减小高度，避免挤占空间 */
@@ -506,6 +506,11 @@
         min-width: 0;
       }
     }
+    /* 手机端导航菜单展开 */
+    #nav-mobile-menu.is-open {
+      max-height: 320px;
+      opacity: 1;
+    }
   </style>
 </head>
 <body class="min-h-screen overflow-x-hidden">
@@ -522,6 +527,8 @@
       <div class="flex items-center gap-3">
         <img src="assets/飞书标识_飞书_中_白.svg" alt="飞书" class="header-feishu h-6 w-auto" />
       </div>
+
+      <!-- 桌面端导航 -->
       <nav class="hidden md:flex items-center gap-8">
         <button class="hover:text-white transition-colors">首页</button>
         <a href="https://apaas.aiforce.cloud/spark/faas/app_4jmc1d8uy6smg/featured" target="_blank" rel="noopener noreferrer" class="hover:text-white transition-colors">精选好房</a>
@@ -539,13 +546,37 @@
           联系我们
         </button>
       </nav>
+
+      <!-- 手机端：汉堡按钮 -->
+      <button id="nav-mobile-toggle" class="md:hidden flex items-center justify-center w-10 h-10 rounded-lg text-white/80 hover:text-white hover:bg-white/10 transition-colors" type="button" aria-label="打开菜单">
+        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16" />
+        </svg>
+      </button>
+    </div>
+
+    <!-- 手机端：下拉菜单（毛玻璃） -->
+    <div id="nav-mobile-menu" class="md:hidden absolute top-full left-0 right-0 overflow-hidden max-h-0 opacity-0 transition-all duration-300 ease-out" aria-hidden="true">
+      <div class="border-t border-white/10 bg-black backdrop-blur-[100px] px-6 py-4 flex flex-col gap-1">
+        <button class="nav-mobile-link py-3 text-left text-white/80 hover:text-white transition-colors">首页</button>
+        <a href="https://apaas.aiforce.cloud/spark/faas/app_4jmc1d8uy6smg/featured" target="_blank" rel="noopener noreferrer" class="nav-mobile-link py-3 text-left text-white/80 hover:text-white transition-colors">精选好房</a>
+        <a href="https://apaas.aiforce.cloud/spark/faas/app_4jmc1d8uy6smg" target="_blank" rel="noopener noreferrer" class="nav-mobile-link py-3 text-left text-white/80 hover:text-white transition-colors">案例合集</a>
+        <button class="nav-mobile-link py-3 text-left text-white/80 hover:text-white transition-colors inline-flex items-center gap-2">
+          <svg class="w-4 h-4 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M9.813 15.904L9 18.75l-.813-2.846a4.5 4.5 0 00-3.09-3.09L2.25 12l2.846-.813a4.5 4.5 0 003.09-3.09L9 5.25l.813 2.846a4.5 4.5 0 003.09 3.09L15.75 12l-2.846.813a4.5 4.5 0 00-3.09 3.09z" /></svg>
+          问问AI
+        </button>
+        <button class="nav-mobile-link py-3 text-left text-white/80 hover:text-white transition-colors inline-flex items-center gap-2">
+          <svg class="w-4 h-4 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M2.25 6.75c0 8.284 6.716 15 15 15h2.25a2.25 2.25 0 002.25-2.25v-1.372c0-.516-.351-.966-.852-1.091l-4.423-1.106c-.44-.11-.902.055-1.173.417l-.97 1.293c-.282.376-.769.542-1.21.38a11.285 11.285 0 01-6.697-6.697c-.162-.441.004-.928.38-1.21l1.293-.97c.363-.271.527-.734.417-1.173L6.963 3.102a1.125 1.125 0 00-1.091-.852H4.5A2.25 2.25 0 002.25 4.5v2.25z" /></svg>
+          联系我们
+        </button>
+      </div>
     </div>
   </header>
 
   <!-- 页面主体 -->
   <main class="relative">
     <!-- Hero：Veltrix 风格大字版式 -->
-    <section class="hero-section min-h-[90vh] flex items-center">
+    <section class="hero-section min-h-[650px] flex items-center">
       <video class="hero-bg-video" autoplay muted loop playsinline>
         <source src="assets/hero-bg_飞书动态效果.mp4" type="video/mp4" />
       </video>
@@ -569,14 +600,6 @@
               id="btn-intro-toggle"
               class="btn-liquid-glass rounded-full text-sm px-5 py-2.5 font-medium tracking-wide">
               样板间介绍
-            </button>
-            <button
-              class="btn-liquid-glass rounded-full text-sm px-5 py-2.5 font-medium tracking-wide">
-              参观精选好房
-            </button>
-            <button
-              class="btn-liquid-glass rounded-full text-sm px-5 py-2.5 font-medium tracking-wide">
-              前往案例合集
             </button>
           </div>
         </div>
@@ -1384,6 +1407,20 @@
             }
           });
         }
+      });
+    })();
+  </script>
+  <script>
+    (function () {
+      document.addEventListener('DOMContentLoaded', function () {
+        var toggle = document.getElementById('nav-mobile-toggle');
+        var menu = document.getElementById('nav-mobile-menu');
+        if (!toggle || !menu) return;
+        toggle.addEventListener('click', function () {
+          var isOpen = menu.classList.toggle('is-open');
+          menu.setAttribute('aria-hidden', isOpen ? 'false' : 'true');
+          toggle.setAttribute('aria-label', isOpen ? '关闭菜单' : '打开菜单');
+        });
       });
     })();
   </script>
