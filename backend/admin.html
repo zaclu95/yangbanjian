@@ -1,0 +1,435 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <title>样板间运营管理</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <style>
+    * { box-sizing: border-box; }
+    body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; background: #0f172a; color: #e2e8f0; margin: 0; padding: 24px; }
+    h1 { font-size: 1.5rem; margin-bottom: 24px; }
+    h2 { font-size: 1.1rem; margin: 24px 0 12px; color: #94a3b8; }
+    .card { background: #1e293b; border-radius: 12px; padding: 20px; margin-bottom: 16px; border: 1px solid #334155; }
+    input, textarea, button { font-size: 14px; }
+    input, textarea { width: 100%; padding: 8px 12px; border-radius: 8px; border: 1px solid #475569; background: #0f172a; color: #e2e8f0; margin-bottom: 8px; }
+    textarea { min-height: 60px; resize: vertical; }
+    button { padding: 10px 20px; border-radius: 8px; border: none; cursor: pointer; font-weight: 500; }
+    .btn-primary { background: #2563eb; color: #fff; }
+    .btn-primary:hover { background: #1d4ed8; }
+    .btn-ghost { background: transparent; color: #94a3b8; }
+    .btn-ghost:hover { color: #e2e8f0; }
+    .form-row { display: grid; grid-template-columns: repeat(auto-fill, minmax(160px, 1fr)); gap: 12px; margin-bottom: 12px; }
+    .form-row label { display: block; font-size: 12px; color: #94a3b8; margin-bottom: 4px; }
+    table { width: 100%; border-collapse: collapse; }
+    th, td { padding: 8px 10px; text-align: left; border-bottom: 1px solid #334155; vertical-align: top; }
+    th { font-size: 12px; color: #94a3b8; font-weight: 500; white-space: nowrap; }
+    .points-table input, .points-table textarea { margin: 0; width: 100%; min-width: 60px; }
+    .points-table textarea { min-height: 44px; resize: vertical; }
+    .tag-inputs { display: flex; flex-wrap: wrap; gap: 4px; }
+    .tag-inputs input { flex: 1 1 0; min-width: 60px; }
+    .points-table .col-num { width: 36px; text-align: center; color: #64748b; }
+    .points-table .col-lng, .points-table .col-lat { width: 78px; }
+    .points-table input[readonly] { background: #0f172a; color: #64748b; cursor: default; }
+    .points-table .col-action { width: 64px; }
+    .btn-sm { padding: 6px 10px; font-size: 12px; }
+    .table-wrap { overflow-x: auto; margin-bottom: 12px; }
+    .msg { padding: 10px; border-radius: 8px; margin-bottom: 12px; }
+    .msg.success { background: #14532d; color: #86efac; }
+    .msg.error { background: #7f1d1d; color: #fca5a5; }
+    .hidden { display: none; }
+    .flex { display: flex; align-items: center; gap: 12px; flex-wrap: wrap; }
+    .mb-2 { margin-bottom: 8px; }
+  </style>
+</head>
+<body>
+  <div id="admin-panel">
+    <div class="flex mb-2">
+      <h1 style="margin: 0;">样板间运营管理</h1>
+    </div>
+    <div id="save-msg" class="msg hidden"></div>
+
+    <h2>点亮地图</h2>
+    <div class="card">
+      <p style="color: #94a3b8; font-size: 14px; margin-bottom: 12px;">共 <span id="points-count">0</span> 条，对应地图点位与右侧案例卡片。可直接在表格中修改，支持新增/删除行，修改后点击「保存」。</p>
+      <div class="table-wrap">
+        <table class="points-table" id="points-table">
+          <thead>
+            <tr>
+              <th class="col-num">#</th>
+              <th>城市</th>
+              <th class="col-lng">经度</th>
+              <th class="col-lat">纬度</th>
+              <th>样板间名称</th>
+              <th>一级行业</th>
+              <th>二级行业</th>
+              <th>封面 URL</th>
+              <th>案例介绍</th>
+              <th>提效场景</th>
+              <th class="col-action">操作</th>
+            </tr>
+          </thead>
+          <tbody id="points-tbody"></tbody>
+        </table>
+      </div>
+      <div class="flex" style="gap: 8px; margin-top: 12px;">
+        <button type="button" class="btn-ghost btn-sm" id="add-point-row">+ 新增一行</button>
+        <button type="button" class="btn-ghost btn-sm" id="batch-upload-btn">批量上传</button>
+        <input type="file" id="batch-upload-input" accept=".xlsx,.xls" style="display: none;" />
+        <button class="btn-primary" id="save-points-btn">保存</button>
+      </div>
+    </div>
+
+    <h2>精选样板间（首屏大卡片）</h2>
+    <div class="card">
+      <div class="form-row">
+        <div style="grid-column: 1 / -1;"><label>左侧标题</label><input id="feat-left-title" /></div>
+      </div>
+      <div class="form-row">
+        <div><label>一级行业</label><input id="feat-right-region" /></div>
+        <div><label>二级行业</label><input id="feat-right-location" /></div>
+      </div>
+      <div class="form-row">
+        <div style="grid-column: 1 / -1;"><label>案例标题</label><input id="feat-right-title" /></div>
+      </div>
+      <div class="form-row">
+        <div style="grid-column: 1 / -1;"><label>案例描述</label><textarea id="feat-right-desc"></textarea></div>
+      </div>
+      <div class="form-row">
+        <div><label>引用文案</label><input id="feat-right-quote-text" /></div>
+        <div><label>引用署名</label><input id="feat-right-quote-cite" /></div>
+      </div>
+      <div class="form-row">
+        <div style="grid-column: 1 / -1;"><label>提效场景</label><input id="feat-right-tags" placeholder="多工厂协同, MES × 飞书, 全球项目管理" /></div>
+      </div>
+      <button class="btn-primary" id="save-showrooms-btn">保存</button>
+    </div>
+
+    <h2>第二张首屏大卡片</h2>
+    <div class="card">
+      <div class="form-row">
+        <div style="grid-column: 1 / -1;"><label>左侧标题</label><input id="feat2-left-title" /></div>
+      </div>
+      <div class="form-row">
+        <div><label>一级行业</label><input id="feat2-right-region" /></div>
+        <div><label>二级行业</label><input id="feat2-right-location" /></div>
+      </div>
+      <div class="form-row">
+        <div style="grid-column: 1 / -1;"><label>案例标题</label><input id="feat2-right-title" /></div>
+      </div>
+      <div class="form-row">
+        <div style="grid-column: 1 / -1;"><label>案例描述</label><textarea id="feat2-right-desc"></textarea></div>
+      </div>
+      <div class="form-row">
+        <div><label>引用文案</label><input id="feat2-right-quote-text" /></div>
+        <div><label>引用署名</label><input id="feat2-right-quote-cite" /></div>
+      </div>
+      <div class="form-row">
+        <div style="grid-column: 1 / -1;"><label>提效场景</label><input id="feat2-right-tags" placeholder="多工厂协同, MES × 飞书, 全球项目管理" /></div>
+      </div>
+      <button class="btn-primary" id="save-showrooms2-btn">保存</button>
+    </div>
+
+  </div>
+
+  <script src="https://cdn.sheetjs.com/xlsx-0.20.1/package/dist/xlsx.full.min.js"></script>
+  <script>
+    var API_BASE = (typeof location !== 'undefined' && location.origin && location.protocol.indexOf('http') === 0)
+      ? location.origin
+      : 'http://localhost:3001';
+    function api(path, opts) {
+      opts = opts || {};
+      var url = API_BASE + path;
+      return fetch(url, { credentials: 'include', ...opts }).then(function (r) {
+        return r.json();
+      });
+    }
+
+    function showMsg(elId, text, isError) {
+      var el = document.getElementById(elId);
+      el.textContent = text;
+      el.className = 'msg ' + (isError ? 'error' : 'success');
+      el.classList.remove('hidden');
+      setTimeout(function () { el.classList.add('hidden'); }, 3000);
+    }
+
+    function esc(v) {
+      return String(v || '').replace(/&/g, '&amp;').replace(/"/g, '&quot;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+    }
+
+    function rowToPoint(tr) {
+      var get = function (key) {
+        var el = tr.querySelector('[data-k="' + key + '"]');
+        return el ? el.value.trim() : '';
+      };
+      var lng = parseFloat(tr.querySelector('[data-k="lng"]').value) || 0;
+      var lat = parseFloat(tr.querySelector('[data-k="lat"]').value) || 0;
+      var inspParts = [
+        get('insp1'),
+        get('insp2'),
+        get('insp3')
+      ].filter(function (s) { return s; });
+      return {
+        city: get('city'),
+        value: [lng, lat],
+        showroomName: get('showroomName'),
+        industry1: get('industry1'),
+        industry2: get('industry2'),
+        cover: get('cover'),
+        customer: get('customer'),
+        inspiration: inspParts.join(', ')
+      };
+    }
+
+    function renderPointsTable(data) {
+      var tbody = document.getElementById('points-tbody');
+      tbody.innerHTML = '';
+      (data || []).forEach(function (p, i) {
+        var tr = document.createElement('tr');
+        var v = p.value || [0, 0];
+        var inspTags = [];
+        if (p.inspiration) {
+          var raw = String(p.inspiration).replace(/^[\u7075\u611f灵感][:：]\s*/i, '');
+          inspTags = raw
+            .split(/[\n,，]/)
+            .map(function (s) { return String(s).trim(); })
+            .filter(function (s) { return s.length > 0; })
+            .slice(0, 3);
+        }
+        tr.innerHTML =
+          '<td class="col-num">' + (i + 1) + '</td>' +
+          '<td><input data-k="city" value="' + esc(p.city || p.name) + '" placeholder="北京"></td>' +
+          '<td><input type="number" step="any" data-k="lng" readonly value="' + (v[0] !== undefined ? v[0] : '') + '" placeholder="—" title="根据城市自动填充"></td>' +
+          '<td><input type="number" step="any" data-k="lat" readonly value="' + (v[1] !== undefined ? v[1] : '') + '" placeholder="—" title="根据城市自动填充"></td>' +
+          '<td><input data-k="showroomName" value="' + esc(p.showroomName) + '" placeholder="样板间名称"></td>' +
+          '<td><input data-k="industry1" value="' + esc(p.industry1) + '" placeholder="一级行业"></td>' +
+          '<td><input data-k="industry2" value="' + esc(p.industry2) + '" placeholder="二级行业"></td>' +
+          '<td><input data-k="cover" value="' + esc(p.cover) + '" placeholder="https://..."></td>' +
+          '<td><textarea data-k="customer" rows="1" placeholder="客户简介">' + esc(p.customer || p.intro) + '</textarea></td>' +
+          '<td>' +
+            '<div class="tag-inputs">' +
+              '<input data-k="insp1" placeholder="标签 1" value="' + esc(inspTags[0] || '') + '">' +
+              '<input data-k="insp2" placeholder="标签 2" value="' + esc(inspTags[1] || '') + '">' +
+              '<input data-k="insp3" placeholder="标签 3" value="' + esc(inspTags[2] || '') + '">' +
+            '</div>' +
+          '</td>' +
+          '<td class="col-action"><button type="button" class="btn-ghost btn-sm" data-action="delete-row" title="删除此行">删除</button></td>';
+        tbody.appendChild(tr);
+      });
+      document.getElementById('points-count').textContent = tbody.querySelectorAll('tr').length;
+      tbody.querySelectorAll('[data-action="delete-row"]').forEach(function (btn) {
+        btn.onclick = function () {
+          btn.closest('tr').remove();
+          document.getElementById('points-count').textContent = document.getElementById('points-tbody').querySelectorAll('tr').length;
+        };
+      });
+    }
+
+    function loadPoints() {
+      api('/api/admin/customer-points').then(function (data) {
+        window._pointsData = data;
+        renderPointsTable(data);
+      }).catch(function () {});
+    }
+
+    function loadShowrooms() {
+      api('/api/admin/showrooms').then(data => {
+        const f = data.featured || {};
+        const l = f.left || {};
+        const r = f.right || {};
+        document.getElementById('feat-left-title').value = l.title || '';
+        document.getElementById('feat-right-region').value = r.region || '';
+        document.getElementById('feat-right-location').value = r.location || '';
+        document.getElementById('feat-right-title').value = r.title || '';
+        document.getElementById('feat-right-desc').value = r.desc || '';
+        document.getElementById('feat-right-quote-text').value = r.quoteText || '';
+        document.getElementById('feat-right-quote-cite').value = r.quoteCite || '';
+        document.getElementById('feat-right-tags').value = (r.tags || []).join(', ');
+        const f2 = data.featured2 || {};
+        const l2 = f2.left || {};
+        const r2 = f2.right || {};
+        document.getElementById('feat2-left-title').value = l2.title || '';
+        document.getElementById('feat2-right-region').value = r2.region || '';
+        document.getElementById('feat2-right-location').value = r2.location || '';
+        document.getElementById('feat2-right-title').value = r2.title || '';
+        document.getElementById('feat2-right-desc').value = r2.desc || '';
+        document.getElementById('feat2-right-quote-text').value = r2.quoteText || '';
+        document.getElementById('feat2-right-quote-cite').value = r2.quoteCite || '';
+        document.getElementById('feat2-right-tags').value = (r2.tags || []).join(', ');
+        window._showroomsData = data;
+      }).catch(() => {});
+    }
+
+    document.getElementById('save-points-btn').onclick = function () {
+      var tbody = document.getElementById('points-tbody');
+      var rows = tbody.querySelectorAll('tr');
+      var data = [];
+      rows.forEach(function (tr) {
+        data.push(rowToPoint(tr));
+      });
+      api('/api/admin/customer-points', { method: 'PUT', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(data) })
+        .then(function () {
+          window._pointsData = data;
+          showMsg('save-msg', '地图与案例卡片已保存', false);
+        })
+        .catch(function (e) { showMsg('save-msg', e.message || '保存失败', true); });
+    };
+
+    document.getElementById('add-point-row').onclick = function () {
+      var tbody = document.getElementById('points-tbody');
+      var n = tbody.querySelectorAll('tr').length;
+      var tr = document.createElement('tr');
+      tr.innerHTML =
+        '<td class="col-num">' + (n + 1) + '</td>' +
+        '<td><input data-k="city" placeholder="北京"></td>' +
+        '<td><input type="number" step="any" data-k="lng" readonly value="" placeholder="—" title="根据城市自动填充"></td>' +
+        '<td><input type="number" step="any" data-k="lat" readonly value="" placeholder="—" title="根据城市自动填充"></td>' +
+        '<td><input data-k="showroomName" placeholder="样板间名称"></td>' +
+        '<td><input data-k="industry1" placeholder="一级行业"></td>' +
+        '<td><input data-k="industry2" placeholder="二级行业"></td>' +
+        '<td><input data-k="cover" placeholder="https://..."></td>' +
+        '<td><textarea data-k="customer" rows="1" placeholder="客户简介"></textarea></td>' +
+        '<td>' +
+          '<div class="tag-inputs">' +
+            '<input data-k="insp1" placeholder="标签 1">' +
+            '<input data-k="insp2" placeholder="标签 2">' +
+            '<input data-k="insp3" placeholder="标签 3">' +
+          '</div>' +
+        '</td>' +
+        '<td class="col-action"><button type="button" class="btn-ghost btn-sm" data-action="delete-row" title="删除此行">删除</button></td>';
+      tbody.appendChild(tr);
+      tr.querySelector('[data-action="delete-row"]').onclick = function () {
+        tr.remove();
+        document.getElementById('points-count').textContent = document.getElementById('points-tbody').querySelectorAll('tr').length;
+      };
+      document.getElementById('points-count').textContent = tbody.querySelectorAll('tr').length;
+    };
+
+    document.getElementById('batch-upload-btn').onclick = function () {
+      document.getElementById('batch-upload-input').click();
+    };
+    document.getElementById('batch-upload-input').onchange = function () {
+      var file = this.files && this.files[0];
+      this.value = '';
+      if (!file) return;
+      if (typeof XLSX === 'undefined') {
+        showMsg('save-msg', '请稍候再试（表格解析库加载中）', true);
+        return;
+      }
+      var reader = new FileReader();
+      reader.onload = function (e) {
+        try {
+          var wb = XLSX.read(e.target.result, { type: 'array' });
+          var firstSheet = wb.Sheets[wb.SheetNames[0]];
+          var rows = XLSX.utils.sheet_to_json(firstSheet, { header: 1, defval: '' });
+          if (!rows || rows.length < 2) {
+            showMsg('save-msg', 'Excel 至少需要表头行和一行数据', true);
+            return;
+          }
+          var headers = rows[0].map(function (h) { return String(h || '').trim(); });
+          var col = function (name, aliases) {
+            var a = [name].concat(aliases || []);
+            for (var i = 0; i < a.length; i++) {
+              var idx = headers.indexOf(a[i]);
+              if (idx !== -1) return idx;
+            }
+            return -1;
+          };
+          var cityCol = col('城市', ['city']);
+          var nameCol = col('样板间名称', ['showroomName', '名称']);
+          var i1Col = col('一级行业', ['industry1']);
+          var i2Col = col('二级行业', ['industry2']);
+          var coverCol = col('封面', ['封面URL', 'cover']);
+          var customerCol = col('客户', ['客户简介', '简介', 'customer', 'intro']);
+          var inspirationCol = col('货-方案', ['灵感', 'inspiration']);
+          if (cityCol === -1) {
+            showMsg('save-msg', 'Excel 需包含「城市」列', true);
+            return;
+          }
+          var existing = window._pointsData || [];
+          var added = 0;
+          for (var r = 1; r < rows.length; r++) {
+            var row = rows[r];
+            var city = row[cityCol] != null ? String(row[cityCol]).trim() : '';
+            if (!city) continue;
+            existing.push({
+              city: city,
+              value: [0, 0],
+              showroomName: (nameCol >= 0 && row[nameCol] != null) ? String(row[nameCol]).trim() : '',
+              industry1: (i1Col >= 0 && row[i1Col] != null) ? String(row[i1Col]).trim() : '',
+              industry2: (i2Col >= 0 && row[i2Col] != null) ? String(row[i2Col]).trim() : '',
+              cover: (coverCol >= 0 && row[coverCol] != null) ? String(row[coverCol]).trim() : '',
+              customer: (customerCol >= 0 && row[customerCol] != null) ? String(row[customerCol]).trim() : '',
+              inspiration: (inspirationCol >= 0 && row[inspirationCol] != null) ? String(row[inspirationCol]).trim() : ''
+            });
+            added++;
+          }
+          window._pointsData = existing;
+          renderPointsTable(existing);
+          showMsg('save-msg', '已从 Excel 追加 ' + added + ' 条，请点击「保存」写入', false);
+        } catch (err) {
+          showMsg('save-msg', '解析失败：' + (err.message || '请检查 Excel 格式'), true);
+        }
+      };
+      reader.readAsArrayBuffer(file);
+    };
+
+    document.getElementById('save-showrooms-btn').onclick = () => {
+      const data = window._showroomsData || { featured: {}, cards: [] };
+      data.featured = {
+        left: {
+          title: document.getElementById('feat-left-title').value
+        },
+        right: {
+          region: document.getElementById('feat-right-region').value,
+          location: document.getElementById('feat-right-location').value,
+          title: document.getElementById('feat-right-title').value,
+          desc: document.getElementById('feat-right-desc').value,
+          quoteText: document.getElementById('feat-right-quote-text').value,
+          quoteCite: document.getElementById('feat-right-quote-cite').value,
+          tags: document.getElementById('feat-right-tags').value.split(',').map(s => s.trim()).filter(Boolean)
+        }
+      };
+      data.cards = (window._showroomsData && window._showroomsData.cards) || [];
+      data.featured2 = {
+        left: {
+          title: document.getElementById('feat2-left-title').value
+        },
+        right: {
+          region: document.getElementById('feat2-right-region').value,
+          location: document.getElementById('feat2-right-location').value,
+          title: document.getElementById('feat2-right-title').value,
+          desc: document.getElementById('feat2-right-desc').value,
+          quoteText: document.getElementById('feat2-right-quote-text').value,
+          quoteCite: document.getElementById('feat2-right-quote-cite').value,
+          tags: document.getElementById('feat2-right-tags').value.split(',').map(s => s.trim()).filter(Boolean)
+        }
+      };
+      api('/api/admin/showrooms', { method: 'PUT', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(data) })
+        .then(() => showMsg('save-msg', '精选样板间已保存', false))
+        .catch(e => showMsg('save-msg', e.message || '保存失败', true));
+    };
+
+    document.getElementById('save-showrooms2-btn').onclick = () => {
+      const data = window._showroomsData || { featured: {}, featured2: {}, cards: [] };
+      data.featured2 = {
+        left: {
+          title: document.getElementById('feat2-left-title').value
+        },
+        right: {
+          region: document.getElementById('feat2-right-region').value,
+          location: document.getElementById('feat2-right-location').value,
+          title: document.getElementById('feat2-right-title').value,
+          desc: document.getElementById('feat2-right-desc').value,
+          tags: document.getElementById('feat2-right-tags').value.split(',').map(s => s.trim()).filter(Boolean)
+        }
+      };
+      api('/api/admin/showrooms', { method: 'PUT', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(data) })
+        .then(() => showMsg('save-msg', '第二张卡片已保存', false))
+        .catch(e => showMsg('save-msg', e.message || '保存失败', true));
+    };
+
+    loadPoints();
+    loadShowrooms();
+  </script>
+</body>
+</html>

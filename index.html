@@ -11,6 +11,14 @@
   <style>
     body {
       background-color: #050608;
+      /* 非 hero 区域：取自花形图标的深蓝 / 靛青 / 暖光配色渐变 */
+      background-image:
+        radial-gradient(ellipse 120% 90% at 80% 20%, rgba(34, 34, 58, 0.95) 0%, rgba(6, 10, 24, 0.0) 55%),
+        radial-gradient(ellipse 95% 85% at 76% 24%, rgba(92, 96, 186, 0.55) 0%, rgba(6, 10, 24, 0.0) 52%),
+        radial-gradient(ellipse 80% 70% at 72% 68%, rgba(58, 63, 140, 0.6) 0%, rgba(5, 6, 8, 0.0) 60%),
+        radial-gradient(ellipse 55% 40% at 50% 35%, rgba(255, 196, 132, 0.25) 0%, rgba(5, 6, 8, 0.0) 65%);
+      background-attachment: fixed;
+      background-repeat: no-repeat;
       color: #ffffff;
     }
 
@@ -83,20 +91,20 @@
       z-index: 0;
     }
 
-    /* 磨砂玻璃层：抽象流动光影，低透明度 + 强模糊 */
+    /* 磨砂玻璃层：极低透明度 + 轻模糊 */
     .hero-section::before {
       z-index: 1;
       content: "";
       position: absolute;
       inset: -20%;
       background:
-        radial-gradient(ellipse 80% 50% at 15% 30%, rgba(59, 130, 246, 0.18), transparent 55%),
-        radial-gradient(ellipse 60% 70% at 85% 20%, rgba(139, 92, 246, 0.16), transparent 50%),
-        radial-gradient(ellipse 70% 40% at 70% 80%, rgba(194, 65, 12, 0.14), transparent 50%),
-        radial-gradient(ellipse 50% 60% at 30% 70%, rgba(30, 58, 138, 0.15), transparent 55%),
-        radial-gradient(ellipse 90% 50% at 50% 50%, rgba(88, 28, 135, 0.1), transparent 60%);
-      filter: blur(160px);
-      -webkit-filter: blur(160px);
+        radial-gradient(ellipse 80% 50% at 15% 30%, rgba(59, 130, 246, 0.05), transparent 55%),
+        radial-gradient(ellipse 60% 70% at 85% 20%, rgba(139, 92, 246, 0.04), transparent 50%),
+        radial-gradient(ellipse 70% 40% at 70% 80%, rgba(194, 65, 12, 0.04), transparent 50%),
+        radial-gradient(ellipse 50% 60% at 30% 70%, rgba(30, 58, 138, 0.04), transparent 55%),
+        radial-gradient(ellipse 90% 50% at 50% 50%, rgba(88, 28, 135, 0.03), transparent 60%);
+      filter: blur(80px);
+      -webkit-filter: blur(80px);
       pointer-events: none;
       animation: heroFrostShift 20s ease-in-out infinite alternate;
     }
@@ -105,15 +113,15 @@
       100% { transform: scale(1.08) translate(2%, 1%); opacity: 0.95; }
     }
 
-    /* 毛玻璃层：半透明 + 背景模糊，参考 Veltrix 截图 */
+    /* 毛玻璃层：最低强度 */
     .hero-section::after {
       content: "";
       position: absolute;
       inset: 0;
       z-index: 1;
-      background: rgba(5, 6, 8, 0.12);
-      backdrop-filter: blur(28px) saturate(120%);
-      -webkit-backdrop-filter: blur(28px) saturate(120%);
+      background: rgba(5, 6, 8, 0.02);
+      backdrop-filter: blur(4px) saturate(100%);
+      -webkit-backdrop-filter: blur(4px) saturate(100%);
       pointer-events: none;
     }
 
@@ -131,14 +139,20 @@
 
     /* 地图容器兜底高度（避免 Tailwind 样式未加载时高度塌陷） */
     #china-map {
-      min-height: 420px;
+      min-height: 460px;
+      overflow: hidden;
+      border-radius: 1rem;
+    }
+    #china-map canvas {
+      left: -2px !important;
+      border-radius: 1rem;
     }
 
-    /* iOS 27 Liquid Glass 质感按钮 */
+    /* iOS 27 Liquid Glass 质感按钮（最低毛玻璃） */
     .btn-liquid-glass {
       background: rgba(255, 255, 255, 0.14);
-      backdrop-filter: blur(20px) saturate(180%);
-      -webkit-backdrop-filter: blur(20px) saturate(180%);
+      backdrop-filter: blur(4px) saturate(100%);
+      -webkit-backdrop-filter: blur(4px) saturate(100%);
       border: 0.5px solid rgba(255, 255, 255, 0.28);
       box-shadow:
         0 0 0 1px rgba(255, 255, 255, 0.08) inset,
@@ -171,8 +185,8 @@
       border-radius: inherit;
       pointer-events: none;
       background: rgba(255, 255, 255, 0.04);
-      backdrop-filter: blur(14px) saturate(140%);
-      -webkit-backdrop-filter: blur(14px) saturate(140%);
+      backdrop-filter: blur(4px) saturate(100%);
+      -webkit-backdrop-filter: blur(4px) saturate(100%);
       opacity: 0;
       transition: opacity 0.35s ease;
       z-index: 1;
@@ -217,11 +231,80 @@
       box-shadow: 0px 4px 12px 0px rgba(0, 0, 0, 0.15);
     }
 
-    /* 导航栏毛玻璃底 */
+    /* 样板间介绍三张卡片：颜色区分 + 阴影 */
+    .intro-card {
+      position: relative;
+      overflow: hidden;
+      min-height: 190px;
+      backdrop-filter: blur(6px) saturate(120%);
+      -webkit-backdrop-filter: blur(6px) saturate(120%);
+      box-shadow:
+        0 14px 35px rgba(0, 0, 0, 0.55),
+        0 0 0 1px rgba(15, 23, 42, 0.8);
+      transition:
+        transform 0.35s cubic-bezier(0.2, 0, 0, 1),
+        box-shadow 0.35s ease,
+        border-color 0.35s ease;
+      transform-origin: center;
+      --mouse-x: 50%;
+      --mouse-y: 50%;
+      --mouse-x-px: 0px;
+      --mouse-y-px: 0px;
+    }
+    .intro-card::before {
+      content: "";
+      position: absolute;
+      inset: -1px;
+      border-radius: inherit;
+      pointer-events: none;
+      background: radial-gradient(
+        420px circle at var(--mouse-x) var(--mouse-y),
+        rgba(255, 255, 255, 0.16) 0%,
+        rgba(255, 255, 255, 0.04) 26%,
+        transparent 52%
+      );
+      opacity: 0;
+      transition: opacity 0.35s ease;
+      z-index: 0;
+    }
+    .intro-card > * {
+      position: relative;
+      z-index: 1;
+    }
+    .intro-card:hover {
+      transform: translateY(-2px) scale(1.02);
+      box-shadow:
+        0 0 0 1px rgba(255, 255, 255, 0.16),
+        0 22px 50px -12px rgba(0, 0, 0, 0.65),
+        0 10px 24px -10px rgba(15, 23, 42, 0.9);
+      border-color: rgba(255, 255, 255, 0.22);
+      /* 追光高亮层 */
+      opacity: 1;
+    }
+    .intro-card:hover::before {
+      opacity: 1;
+    }
+    .intro-card-1 {
+      background:
+        radial-gradient(140% 180% at 0% 0%, rgba(20, 86, 240, 0.28), transparent 55%),
+        linear-gradient(to bottom right, rgba(6, 10, 24, 0.9), rgba(15, 23, 42, 0.96));
+    }
+    .intro-card-2 {
+      background:
+        radial-gradient(140% 180% at 100% 0%, rgba(139, 92, 246, 0.3), transparent 55%),
+        linear-gradient(to bottom right, rgba(6, 10, 24, 0.9), rgba(24, 24, 51, 0.96));
+    }
+    .intro-card-3 {
+      background:
+        radial-gradient(160% 200% at 50% 0%, rgba(248, 171, 81, 0.34), transparent 55%),
+        linear-gradient(to bottom right, rgba(10, 14, 30, 0.9), rgba(24, 24, 51, 0.96));
+    }
+
+    /* 导航栏毛玻璃底（最低强度） */
     .header-glass {
       background: rgba(5, 6, 8, 0.55);
-      backdrop-filter: blur(12px) saturate(180%);
-      -webkit-backdrop-filter: blur(12px) saturate(180%);
+      backdrop-filter: blur(4px) saturate(100%);
+      -webkit-backdrop-filter: blur(4px) saturate(100%);
       border-bottom: 1px solid rgba(255, 255, 255, 0.06);
     }
 
@@ -244,8 +327,8 @@
       flex-shrink: 0;
       height: 2.25rem;
       min-width: 6rem;
-      opacity: 0.6;
-      background: rgba(255, 255, 255, 0.05);
+      opacity: 0.85;
+      background: #000000;
       border-radius: 0.25rem;
       display: flex;
       align-items: center;
@@ -258,13 +341,31 @@
       100% { transform: translateX(0); }
     }
 
-    /* 地图右侧：深色面板（无边框，点击地图点位后打开） */
+    /* 地图区外壳：柔和毛玻璃容器 */
+    .map-shell-glass {
+      background: rgba(6, 10, 24, 0.78);
+      backdrop-filter: blur(6px) saturate(120%);
+      -webkit-backdrop-filter: blur(6px) saturate(120%);
+      border-radius: 1.5rem;
+      border: 1px solid rgba(255, 255, 255, 0.06);
+      box-shadow:
+        0 0 0 1px rgba(10, 20, 40, 0.65) inset,
+        0 24px 60px rgba(0, 0, 0, 0.7),
+        0 42px 110px -24px rgba(0, 0, 0, 0.55);
+    }
+
+    /* 地图右侧：透明磨砂玻璃面板（最低强度） */
     .map-case-panel {
-      background: rgba(13, 18, 25, 0.96);
-      backdrop-filter: blur(20px);
-      -webkit-backdrop-filter: blur(20px);
+      background: rgba(5, 6, 8, 0.08);
+      backdrop-filter: blur(4px) saturate(100%);
+      -webkit-backdrop-filter: blur(4px) saturate(100%);
       border-radius: 1rem;
-      box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4);
+      border: 1px solid rgba(255, 255, 255, 0.15);
+      box-shadow:
+        0 0 0 1px rgba(15, 23, 42, 0.5) inset,
+        0 18px 45px rgba(0, 0, 0, 0.55),
+        0 32px 80px -16px rgba(0, 0, 0, 0.45),
+        0 48px 120px -24px rgba(0, 0, 0, 0.28);
       transition: transform 0.25s ease, opacity 0.25s ease;
     }
     .map-case-panel.is-closed {
@@ -272,9 +373,76 @@
       pointer-events: none;
       opacity: 0;
     }
-    /* 面板内案例卡片：无边框，填满面板 */
+    /* 面板内案例卡片：最低毛玻璃 */
     .map-case-card {
-      background: linear-gradient(to bottom right, rgba(20, 86, 240, 0.08), #0a0e14);
+      background:
+        radial-gradient(120% 160% at 0% 0%, rgba(20, 86, 240, 0.12), transparent 55%),
+        radial-gradient(130% 180% at 100% 0%, rgba(139, 92, 246, 0.08), transparent 60%),
+        linear-gradient(to bottom right, rgba(15, 23, 42, 0.5), rgba(3, 7, 18, 0.55));
+      backdrop-filter: blur(4px) saturate(100%);
+      -webkit-backdrop-filter: blur(4px) saturate(100%);
+    }
+    #case-card-content {
+      min-height: 320px;
+    }
+    #case-card-customer,
+    #case-card-inspiration-tags {
+      min-height: 4.5em; /* 预留约 3–4 行高度，保证按钮对齐 */
+    }
+
+    /* 地图右侧卡片：提效场景标签（最多 3 个） */
+    #case-card-inspiration-tags {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.375rem;
+      align-items: flex-start;
+    }
+    .case-tag {
+      display: inline-flex;
+      align-items: center;
+      padding: 0.15rem 0.5rem;
+      border-radius: 999px;
+      border: 1px solid rgba(148, 163, 184, 0.55);
+      background: rgba(15, 23, 42, 0.7);
+      font-size: 0.6875rem;
+      line-height: 1.3;
+      color: rgba(226, 232, 240, 0.8);
+      white-space: nowrap;
+      max-width: 100%;
+    }
+
+    /* 精选卡片内「高层分享」引用样式 */
+    .feat-quote {
+      border-left: 3px solid rgba(20, 86, 240, 0.5);
+      padding-left: 1rem;
+      margin: 0;
+      font-size: 0.8125rem;
+      line-height: 1.5;
+      color: rgba(255, 255, 255, 0.8);
+      font-style: italic;
+    }
+    .feat-quote cite {
+      display: block;
+      margin-top: 0.5rem;
+      font-size: 0.6875rem;
+      color: rgba(255, 255, 255, 0.5);
+      font-style: normal;
+    }
+
+    /* 地图右侧卡片：长文案最多显示 4 行，超出折叠 */
+    .map-case-card .line-clamp-4 {
+      display: -webkit-box;
+      -webkit-box-orient: vertical;
+      -webkit-line-clamp: 4;
+      overflow: hidden;
+    }
+
+    /* 样板间介绍折叠区：凹进去的阴影，增强立体感 */
+    #intro-section {
+      box-shadow:
+        inset 0 4px 20px rgba(0, 0, 0, 0.35),
+        inset 0 1px 0 rgba(255, 255, 255, 0.04),
+        inset 0 -2px 10px rgba(0, 0, 0, 0.2);
     }
   </style>
 </head>
@@ -290,9 +458,7 @@
   <header class="header-glass fixed top-0 inset-x-0 z-30">
     <div class="mx-auto max-w-6xl px-6 py-5 flex items-center justify-between text-xs md:text-sm text-white/70">
       <div class="flex items-center gap-3">
-        <span class="header-feishu text-xs uppercase tracking-[0.2em] text-white/60">飞书</span>
-        <span class="h-0.5 w-6 bg-white/20 rounded-full"></span>
-        <span class="text-xs text-white/70">先进团队  先用飞书</span>
+        <img src="assets/飞书标识_飞书_中_白.svg" alt="飞书" class="header-feishu h-6 w-auto" />
       </div>
       <nav class="hidden md:flex items-center gap-8">
         <button class="hover:text-white transition-colors">首页</button>
@@ -321,7 +487,7 @@
       <video class="hero-bg-video" autoplay muted loop playsinline>
         <source src="assets/hero-bg_飞书动态效果.mp4" type="video/mp4" />
       </video>
-      <div class="hero-inner mx-auto max-w-6xl px-6 w-full flex gap-10 md:gap-16">
+      <div class="hero-inner mx-auto max-w-4xl px-6 w-full flex gap-10 md:gap-16">
         <!-- 左侧主文案 -->
         <div class="flex-1 pt-28 pb-20 flex flex-col justify-center">
           <div class="space-y-6 md:space-y-10 leading-none">
@@ -333,10 +499,15 @@
             </div>
           </div>
           <p class="mt-6 max-w-xl text-sm md:text-base text-white/65">
-            探索各行业领先企业如何通过飞书重塑增长——从深敏的组织协同到全链路的自动化决策，为您呈现一套实景化、可复刻的「数字化样板间」。
+            探索各行业领先企业如何通过飞书重塑增长——从深敏的组织协同到全链路的自动化决策，为你呈现能提效、可复刻的「数字化样板间」
           </p>
 
           <div class="mt-8 flex flex-wrap items-center gap-8">
+            <button
+              id="btn-intro-toggle"
+              class="btn-liquid-glass rounded-full text-sm px-5 py-2.5 font-medium tracking-wide">
+              样板间介绍
+            </button>
             <button
               class="btn-liquid-glass rounded-full text-sm px-5 py-2.5 font-medium tracking-wide">
               参观精选好房
@@ -351,13 +522,13 @@
         <!-- 右侧指标 -->
         <div class="hidden md:flex flex-none items-center justify-end gap-10 pt-28 pb-20">
           <div class="h-52 w-px bg-gradient-to-b from-white/0 via-white/35 to-white/0"></div>
-          <div class="flex flex-col gap-6 text-right text-xs text-white/60">
+          <div class="flex flex-col gap-6 text-right text-sm text-white/60">
             <div>
-              <div class="text-3xl font-semibold text-white">21+</div>
+              <div class="text-4xl font-semibold text-white" data-counter data-target="21">0+</div>
               <div class="mt-1">沉淀企业数字化样板间案例</div>
             </div>
             <div>
-              <div class="text-3xl font-semibold text-white">10+</div>
+              <div class="text-4xl font-semibold text-white" data-counter data-target="10">0+</div>
               <div class="mt-1">覆盖制造、零售、科技等核心行业</div>
             </div>
           </div>
@@ -365,41 +536,151 @@
       </div>
     </section>
 
+    <!-- 样板间介绍：折叠区域（点击按钮展开/收起） -->
+    <section id="intro-section" class="border-t border-white/5 bg-[#050608] py-10 md:py-14 hidden">
+      <div class="mx-auto max-w-6xl px-6 space-y-6 md:space-y-8">
+        <div>
+          <p class="text-xs md:text-sm text-white/45 uppercase tracking-[0.25em] mb-3">
+            SHOWROOM OVERVIEW
+          </p>
+          <h2 class="text-2xl md:text-3xl font-semibold tracking-tight text-white">
+            样板间介绍
+          </h2>
+        </div>
+        <div class="grid md:grid-cols-3 gap-6 md:gap-8 text-base md:text-[15px] text-white/70">
+          <!-- 卡片 1：定位 -->
+          <div class="intro-card intro-card-1 space-y-3 p-5 rounded-2xl border border-white/10">
+            <div class="flex items-center gap-3">
+              <div class="flex items-center justify-center text-[#e5edff]">
+                <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+                  <path stroke-linecap="round" stroke-linejoin="round" d="M12 21s-6-4.686-6-10a6 6 0 1112 0c0 5.314-6 10-6 10z" />
+                  <circle cx="12" cy="11" r="2.5" />
+                </svg>
+              </div>
+              <h3 class="text-base md:text-lg font-semibold text-white">定位</h3>
+            </div>
+            <p>通过真实企业的数字化实践，为不同阶段的团队提供可落地、可复制的组织升级模板。</p>
+          </div>
+
+          <!-- 卡片 2：结构 -->
+          <div class="intro-card intro-card-2 space-y-3 p-5 rounded-2xl border border-white/10">
+            <div class="flex items-center gap-3">
+              <div class="flex items-center justify-center text-[#e5edff]">
+                <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+                  <rect x="4" y="4" width="7" height="7" rx="1.5" />
+                  <rect x="13" y="4" width="7" height="7" rx="1.5" />
+                  <rect x="4" y="13" width="7" height="7" rx="1.5" />
+                  <rect x="13" y="13" width="7" height="7" rx="1.5" />
+                </svg>
+              </div>
+              <h3 class="text-base md:text-lg font-semibold text-white">结构</h3>
+            </div>
+            <p>从总部协同、一线运营到生产制造与管理决策，以场景划分模块化样板间。</p>
+          </div>
+
+          <!-- 卡片 3：适用对象 -->
+          <div class="intro-card intro-card-3 space-y-3 p-5 rounded-2xl border border-white/10">
+            <div class="flex items-center gap-3">
+              <div class="flex items-center justify-center text-[#e5edff]">
+                <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+                  <path stroke-linecap="round" stroke-linejoin="round" d="M7.5 14a4 4 0 018 0v1.25a2.75 2.75 0 01-2.75 2.75h-2.5A2.75 2.75 0 017.5 15.25V14z" />
+                  <circle cx="12" cy="8" r="3" />
+                  <path stroke-linecap="round" stroke-linejoin="round" d="M5 19.5a3.5 3.5 0 013.5-3.5" />
+                  <path stroke-linecap="round" stroke-linejoin="round" d="M19 19.5a3.5 3.5 0 00-3.5-3.5" />
+                </svg>
+              </div>
+              <h3 class="text-base md:text-lg font-semibold text-white">适用对象</h3>
+            </div>
+            <p>正在规划或推进数字化转型的业务负责人、IT 负责人与组织发展团队。</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
     <!-- Trusted by 区域 -->
-    <section class="border-t border-white/5 bg-black py-10 md:py-12">
+    <section class="border-t border-white/5 bg-[#050608] py-10 md:py-12">
       <div class="mx-auto max-w-6xl px-6 flex flex-col gap-6">
         <div class="text-xs md:text-sm text-white/40 uppercase tracking-[0.25em]">
           样板间LOGO
         </div>
         <div class="logo-marquee-wrap">
           <div class="logo-marquee-track">
-            <div class="logo-marquee-item">LOGO 01</div>
-            <div class="logo-marquee-item">LOGO 02</div>
-            <div class="logo-marquee-item">LOGO 03</div>
-            <div class="logo-marquee-item">LOGO 04</div>
-            <div class="logo-marquee-item">LOGO 05</div>
-            <div class="logo-marquee-item">LOGO 06</div>
-            <div class="logo-marquee-item">LOGO 07</div>
-            <div class="logo-marquee-item">LOGO 08</div>
-            <div class="logo-marquee-item">LOGO 09</div>
-            <div class="logo-marquee-item">LOGO 10</div>
-            <div class="logo-marquee-item">LOGO 01</div>
-            <div class="logo-marquee-item">LOGO 02</div>
-            <div class="logo-marquee-item">LOGO 03</div>
-            <div class="logo-marquee-item">LOGO 04</div>
-            <div class="logo-marquee-item">LOGO 05</div>
-            <div class="logo-marquee-item">LOGO 06</div>
-            <div class="logo-marquee-item">LOGO 07</div>
-            <div class="logo-marquee-item">LOGO 08</div>
-            <div class="logo-marquee-item">LOGO 09</div>
-            <div class="logo-marquee-item">LOGO 10</div>
+            <!-- 第一轮：真实客户 LOGO -->
+            <div class="logo-marquee-item">
+              <img src="assets/assets_客户 logo_decolored/上海万物新生信息科技集团有限公司_decolored.png" alt="上海万物新生信息科技集团有限公司" class="h-full w-auto object-contain" />
+            </div>
+            <div class="logo-marquee-item">
+              <img src="assets/assets_客户 logo_decolored/中科创达软件股份有限公司.png" alt="中科创达软件股份有限公司" class="h-full w-auto object-contain" />
+            </div>
+            <div class="logo-marquee-item">
+              <img src="assets/assets_客户 logo_decolored/丽水野人手作品牌管理有限公司.png" alt="丽水野人手作品牌管理有限公司" class="h-full w-auto object-contain" />
+            </div>
+            <div class="logo-marquee-item">
+              <img src="assets/assets_客户 logo_decolored/四川唯怡饮料食品有限公司_decolored.jpg" alt="四川唯怡饮料食品有限公司" class="h-full w-auto object-contain" />
+            </div>
+            <div class="logo-marquee-item">
+              <img src="assets/assets_客户 logo_decolored/宁波力劲塑机智造有限公司.png" alt="宁波力劲塑机智造有限公司" class="h-full w-auto object-contain" />
+            </div>
+            <div class="logo-marquee-item">
+              <img src="assets/assets_客户 logo_decolored/广东仙津保健饮料食品有限公司_decolored.png" alt="广东仙津保健饮料食品有限公司" class="h-full w-auto object-contain" />
+            </div>
+            <div class="logo-marquee-item">
+              <img src="assets/assets_客户 logo_decolored/德马科技集团股份有限公司_decolored.png" alt="德马科技集团股份有限公司" class="h-full w-auto object-contain" />
+            </div>
+            <div class="logo-marquee-item">
+              <img src="assets/assets_客户 logo_decolored/教育部中外语言交流合作中心_decolored.png" alt="教育部中外语言交流合作中心" class="h-full w-auto object-contain" />
+            </div>
+            <div class="logo-marquee-item">
+              <img src="assets/assets_客户 logo_decolored/深圳宝龙达信息技术股份有限公司_decolored.png" alt="深圳宝龙达信息技术股份有限公司" class="h-full w-auto object-contain" />
+            </div>
+            <div class="logo-marquee-item">
+              <img src="assets/assets_客户 logo_decolored/香港航空有限公司_decolored.png" alt="香港航空有限公司" class="h-full w-auto object-contain" />
+            </div>
+            <div class="logo-marquee-item">
+              <img src="assets/assets_客户 logo_decolored/高途教育科技集团有限公司_decolored.png" alt="高途教育科技集团有限公司" class="h-full w-auto object-contain" />
+            </div>
+
+            <!-- 第二轮：重复一遍，形成无缝滚动 -->
+            <div class="logo-marquee-item">
+              <img src="assets/assets_客户 logo_decolored/上海万物新生信息科技集团有限公司_decolored.png" alt="上海万物新生信息科技集团有限公司" class="h-full w-auto object-contain" />
+            </div>
+            <div class="logo-marquee-item">
+              <img src="assets/assets_客户 logo_decolored/中科创达软件股份有限公司.png" alt="中科创达软件股份有限公司" class="h-full w-auto object-contain" />
+            </div>
+            <div class="logo-marquee-item">
+              <img src="assets/assets_客户 logo_decolored/丽水野人手作品牌管理有限公司.png" alt="丽水野人手作品牌管理有限公司" class="h-full w-auto object-contain" />
+            </div>
+            <div class="logo-marquee-item">
+              <img src="assets/assets_客户 logo_decolored/四川唯怡饮料食品有限公司_decolored.jpg" alt="四川唯怡饮料食品有限公司" class="h-full w-auto object-contain" />
+            </div>
+            <div class="logo-marquee-item">
+              <img src="assets/assets_客户 logo_decolored/宁波力劲塑机智造有限公司.png" alt="宁波力劲塑机智造有限公司" class="h-full w-auto object-contain" />
+            </div>
+            <div class="logo-marquee-item">
+              <img src="assets/assets_客户 logo_decolored/广东仙津保健饮料食品有限公司_decolored.png" alt="广东仙津保健饮料食品有限公司" class="h-full w-auto object-contain" />
+            </div>
+            <div class="logo-marquee-item">
+              <img src="assets/assets_客户 logo_decolored/德马科技集团股份有限公司_decolored.png" alt="德马科技集团股份有限公司" class="h-full w-auto object-contain" />
+            </div>
+            <div class="logo-marquee-item">
+              <img src="assets/assets_客户 logo_decolored/教育部中外语言交流合作中心_decolored.png" alt="教育部中外语言交流合作中心" class="h-full w-auto object-contain" />
+            </div>
+            <div class="logo-marquee-item">
+              <img src="assets/assets_客户 logo_decolored/深圳宝龙达信息技术股份有限公司_decolored.png" alt="深圳宝龙达信息技术股份有限公司" class="h-full w-auto object-contain" />
+            </div>
+            <div class="logo-marquee-item">
+              <img src="assets/assets_客户 logo_decolored/香港航空有限公司_decolored.png" alt="香港航空有限公司" class="h-full w-auto object-contain" />
+            </div>
+            <div class="logo-marquee-item">
+              <img src="assets/assets_客户 logo_decolored/高途教育科技集团有限公司_decolored.png" alt="高途教育科技集团有限公司" class="h-full w-auto object-contain" />
+            </div>
           </div>
         </div>
       </div>
     </section>
 
     <!-- 地图区：ECharts 动态点亮 -->
-    <section class="bg-[#050608] py-16 md:py-20 border-t border-white/5">
+    <section class="py-16 md:py-20 border-t border-white/5">
       <div class="mx-auto max-w-6xl px-6 space-y-8">
         <div class="flex flex-col md:flex-row md:items-end md:justify-between gap-4">
           <div>
@@ -407,30 +688,27 @@
               DIGITAL FOOTPRINT · CHINA
             </p>
             <h2 class="text-2xl md:text-3xl font-semibold tracking-tight">
-              客户数字化足迹，点亮全国样板间
+              全国样板间，探索客户数字化足迹
             </h2>
             <p class="mt-3 text-[14px] text-white/65 max-w-xl">
-              通过飞书连接总部与全国分支机构，让每一个被点亮的坐标，都代表一间真实的数字化转型样板间。
+              点击地图上的数字化足迹，探索每一家企业如何将复杂流程转化为自动化的生产力
             </p>
           </div>
         </div>
 
-        <div class="mt-4 relative rounded-3xl overflow-hidden bg-[#0d1219] p-3 md:p-5">
-          <div id="china-map" class="w-full h-[420px] md:h-[480px] rounded-2xl"></div>
+        <div class="mt-4 relative rounded-3xl overflow-hidden map-shell-glass p-2 md:p-3">
+          <div id="china-map" class="w-full h-[460px] md:h-[520px] rounded-2xl"></div>
           <aside id="map-case-panel" class="map-case-panel is-closed absolute right-4 top-4 bottom-4 w-72 md:w-80 flex flex-col rounded-2xl overflow-hidden">
-            <div class="px-4 py-2.5 border-b border-white/10 bg-white/5 flex items-center justify-between">
-              <p class="text-[11px] uppercase tracking-[0.2em] text-white/50">选中案例</p>
-              <button type="button" id="map-case-panel-close" class="p-1.5 rounded-full text-white/60 hover:text-white hover:bg-white/10 transition" aria-label="关闭">✕</button>
-            </div>
             <div id="map-case-card" class="map-case-card flex flex-col flex-1 min-h-0 overflow-hidden">
-              <div id="case-card-cover" class="w-full aspect-[16/10] flex-shrink-0 bg-white/5 overflow-hidden">
+              <div id="case-card-cover" class="relative w-full aspect-[16/10] flex-shrink-0 bg-white/5 overflow-hidden">
+                <button type="button" id="map-case-panel-close" class="absolute right-3 top-3 z-10 p-1.5 rounded-full text-white/60 hover:text-white hover:bg-white/10 transition" aria-label="关闭">✕</button>
                 <img id="case-card-cover-img" src="" alt="" class="w-full h-full object-cover hidden" />
               </div>
-              <div class="p-4 flex flex-col gap-3 flex-1 min-h-0">
+              <div class="p-4 flex flex-col gap-3 flex-1 min-h-0 justify-start">
               <div id="case-card-placeholder" class="text-sm text-white/45 py-8 text-center">
                 点击地图上的点位查看案例
               </div>
-              <div id="case-card-content" class="hidden flex flex-col gap-3">
+              <div id="case-card-content" class="hidden flex flex-col gap-3 flex-1 min-h-0">
                 <div class="flex items-start justify-between gap-3">
                   <div class="flex items-center gap-3 min-w-0 flex-1">
                     <div class="h-10 w-10 rounded-full bg-[#1456F0]/30 border border-[#1456F0]/50 flex items-center justify-center text-white/90 shrink-0">
@@ -439,15 +717,30 @@
                     <div class="min-w-0">
                       <p id="case-card-location" class="text-[11px] text-white/50">Location</p>
                       <h3 id="case-card-title" class="text-base font-semibold text-white truncate"></h3>
+                      <span id="case-card-industry" class="mt-1 block text-[11px] text-white/50"></span>
                     </div>
                   </div>
-                  <span id="case-card-industry" class="text-xs px-2.5 py-1 rounded-full bg-[#1456F0]/25 text-white/90 border border-[#1456F0]/40 shrink-0"></span>
                 </div>
-                <p id="case-card-customer" class="text-xs text-white/65"></p>
-                <p id="case-card-theme" class="text-xs text-white/50"></p>
-                <button type="button" class="mt-1 rounded-full bg-[#1456F0] px-4 py-2 text-sm text-white font-medium hover:bg-[#336DF4] transition w-fit">
-                  前往参观
+                <p id="case-card-customer" class="text-xs text-white/65 line-clamp-4"></p>
+                <div id="case-card-inspiration" class="hidden">
+                  <div class="flex items-center gap-2 text-[11px] text-white/45 mb-1">
+                    <svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.3">
+                      <rect x="4" y="5" width="16" height="14" rx="2" ry="2" />
+                      <path d="M9 5V3.8A1.8 1.8 0 0 1 10.8 2h2.4A1.8 1.8 0 0 1 15 3.8V5" />
+                      <path d="M9 11h6" />
+                    </svg>
+                    <span>提效场景</span>
+                  </div>
+                  <div id="case-card-inspiration-tags" class="text-xs text-white/50"></div>
+                </div>
+                <button type="button" class="mt-auto pt-3 pb-3 h-[30px] rounded-full bg-[#1456F0] px-3 text-xs text-white font-medium hover:bg-[#336DF4] transition w-fit shrink-0 inline-flex items-center justify-center text-center">
+                  前往样板间
                 </button>
+                <div id="case-card-paginator" class="hidden mt-3 flex items-center justify-center gap-2">
+                  <button type="button" id="case-card-prev" class="p-1.5 rounded-full text-white/60 hover:text-white hover:bg-white/10 transition disabled:opacity-40 disabled:pointer-events-none" aria-label="上一页">‹</button>
+                  <span id="case-card-page-info" class="text-xs text-white/50 min-w-[4rem] text-center">1 / 1</span>
+                  <button type="button" id="case-card-next" class="p-1.5 rounded-full text-white/60 hover:text-white hover:bg-white/10 transition disabled:opacity-40 disabled:pointer-events-none" aria-label="下一页">›</button>
+                </div>
               </div>
               </div>
             </div>
@@ -456,8 +749,8 @@
       </div>
     </section>
 
-    <!-- 精选样板间：Our selected works 风格 -->
-    <section class="bg-black py-18 md:py-20 border-t border-white/5">
+    <!-- 精选样板间：Featured Cases 风格 -->
+    <section class="py-18 md:py-20 border-t border-white/5">
       <div class="mx-auto max-w-6xl px-6 space-y-10">
         <div>
           <p class="text-xs uppercase tracking-[0.25em] text-white/45 mb-3">
@@ -467,107 +760,192 @@
             每月上新 · 精选数字化「好房」
           </h2>
           <p class="mt-3 text-sm text-white/65 max-w-2xl">
-            将高价值数字化转型案例包装为可参观、可对标的「样板间好房」，按行业、城市与转型主题呈现，
-            帮助你快速找到最接近自身阶段的路径参考。
+            为你精选全国各行各业的"精装修"样板间，帮助你快速找到合适的参考
           </p>
         </div>
 
-        <!-- 第一行：大图 + 重点案例 -->
-        <div class="grid md:grid-cols-2 gap-6 md:gap-8 items-stretch">
-          <div class="card-liquid-glass rounded-3xl border border-white/10 overflow-hidden bg-gradient-to-br from-[#1456F0]/10 to-[#08090c]">
-            <div class="aspect-[16/10] w-full bg-white/5"></div>
-            <div class="px-6 py-4 border-t border-white/10 flex items-center justify-between">
-              <div>
-                <div class="font-medium text-sm text-white">制造业 · 华东 · 样板工厂</div>
-                <div class="mt-0.5 text-[11px] text-white/60">
-                  以飞书为核心的全球协同生产与项目管理中台。
+        <!-- 第一行：合并为一张卡片，竖线分割左右（由 /api/showrooms 的 featured 填充） -->
+        <div id="feat-card" class="card-liquid-glass rounded-3xl border border-white/10 overflow-hidden flex flex-col md:flex-row bg-gradient-to-br from-[#1456F0]/10 via-[#08090c] to-black">
+          <!-- 左侧：大图 + 简介 -->
+          <div class="flex-1 flex flex-col min-w-0">
+            <div class="aspect-[16/10] w-full bg-white/5 flex-shrink-0 overflow-hidden">
+              <img
+                src="assets/case-covers/德马科技集团股份有限公司.png"
+                alt="德马科技集团股份有限公司样板间"
+                class="w-full h-full object-cover"
+              />
+            </div>
+            <div class="pl-4 pr-6 py-4 border-t border-white/10">
+              <div class="min-w-0 flex-1 flex flex-col gap-1">
+                <div class="flex items-center gap-2">
+                  <div id="feat-left-logo" class="h-6 w-auto -ml-0.5">
+                    <img
+                      id="feat-left-logo-img"
+                      src="assets/assets_客户 logo_decolored/德马科技集团股份有限公司_decolored.png"
+                      alt="德马科技"
+                      class="h-full w-auto object-contain"
+                    />
+                  </div>
+                  <span class="inline-flex items-center rounded-full border border-white/20 px-2 py-0.5 text-[11px] text-white/65">
+                    精选好房
+                  </span>
                 </div>
+                <div id="feat-left-title" class="font-extrabold text-[15px] text-white">制造业 · 华东 · 样板工厂</div>
               </div>
-              <span class="text-[11px] text-white/50 px-2.5 py-1 rounded-full border border-[#1456F0]/40 text-white/80">Feishu Inside</span>
             </div>
           </div>
-
-          <article
-            class="card-liquid-glass relative flex flex-col rounded-3xl border border-white/10 bg-gradient-to-br from-[#1456F0]/12 via-black to-black p-5 md:p-6">
+          <div class="w-px bg-white/10 flex-shrink-0 self-stretch hidden md:block" aria-hidden="true"></div>
+          <!-- 右侧：精选好房详情 -->
+          <div class="flex-1 flex flex-col p-5 md:p-6 min-w-0">
             <div class="mb-3 flex items-center gap-2 text-[11px] text-white/65">
-              <span class="rounded-full border border-white/30 px-2 py-0.5 text-[10px] uppercase tracking-[0.18em]">
-                Featured
-              </span>
-              <span>制造业</span>
-              <span>华东 · 苏州</span>
+              <span id="feat-right-region">制造业</span>
+              <span id="feat-right-location">华东 · 苏州</span>
             </div>
-            <div class="flex items-center gap-2 text-xs text-white/60 mb-2">
-              <div class="h-6 w-6 rounded-full border border-white/30 flex items-center justify-center text-[9px]">
-                Logo
-              </div>
-              <span>某高端装备龙头 · 全球工厂集群</span>
+            <h3 id="feat-right-title" class="text-base md:text-lg font-semibold mt-1">全球协同生产与项目管理一体化升级样板间</h3>
+            <p id="feat-right-desc" class="mt-3 text-xs md:text-sm text-white/65">打通飞书多维表格、项目与流程审批，实现跨工厂排产协同、质量闭环管理与跨时区项目透明协作。</p>
+            <div class="mt-4">
+              <p class="text-[11px] text-white/45 uppercase tracking-wider mb-2">高层分享</p>
+              <blockquote id="feat-right-quote" class="feat-quote">
+                <span id="feat-right-quote-text">飞书把我们的跨工厂协同从「人找事」变成了「事找人」，排产与质量数据真正拉通到了一张表里。</span>
+                <cite id="feat-right-quote-cite">— 某高端装备企业 生产负责人</cite>
+              </blockquote>
             </div>
-            <h3 class="text-base md:text-lg font-semibold mt-1">
-              全球协同生产与项目管理一体化升级样板间
-            </h3>
-            <p class="mt-3 text-xs md:text-sm text-white/65">
-              打通飞书多维表格、项目与流程审批，实现跨工厂排产协同、质量闭环管理与跨时区项目透明协作。
-            </p>
-            <div class="mt-4 flex flex-wrap gap-2 text-[11px] text-white/55">
+            <div id="feat-right-tags" class="mt-4 flex flex-wrap gap-2 text-[11px] text-white/55">
+              <span class="px-2 py-1 rounded-full border border-white/20">多工厂协同</span>
+              <span class="px-2 py-1 rounded-full border border-white/20">MES × 飞书</span>
+              <span class="px-2 py-1 rounded-full border border-white/20">全球项目管理</span>
+            </div>
+            <div class="mt-auto pt-5 flex flex-wrap items-center gap-3 justify-start">
+              <button class="inline-flex items-center gap-1.5 rounded-full px-3 py-1.5 text-[11px] md:text-xs text-white bg-[#1456F0] border border-[#1456F0] hover:bg-[#336DF4] hover:border-[#336DF4] transition">
+                前往案例
+                <span class="text-[11px]">↗</span>
+              </button>
+              <button class="inline-flex items-center gap-1.5 rounded-full px-3 py-1.5 text-[11px] md:text-xs text-white bg-white/10 border border-white/25 hover:bg-white/20 hover:border-white/40 transition">
+                教我怎么搭
+              </button>
+              <button class="inline-flex items-center gap-1.5 rounded-full px-3 py-1.5 text-[11px] md:text-xs text-white bg-white/10 border border-white/25 hover:bg-white/20 hover:border-white/40 transition">
+                我要搭同款
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <!-- 第二张首屏大卡片：左详情、右大图+简介（由 /api/showrooms 的 featured2 填充） -->
+        <div id="feat2-card" class="card-liquid-glass rounded-3xl border border-white/10 overflow-hidden flex flex-col md:flex-row bg-gradient-to-br from-[#1456F0]/10 via-[#08090c] to-black mt-6 md:mt-8">
+          <!-- 左侧：精选好房详情 -->
+          <div class="flex-1 flex flex-col p-5 md:p-6 min-w-0">
+            <div class="mb-3 flex items-center gap-2 text-[11px] text-white/65">
+              <span id="feat2-right-region">制造业</span>
+              <span id="feat2-right-location">华东 · 苏州</span>
+            </div>
+            <h3 id="feat2-right-title" class="text-base md:text-lg font-semibold mt-1">全球协同生产与项目管理一体化升级样板间</h3>
+            <p id="feat2-right-desc" class="mt-3 text-xs md:text-sm text-white/65">打通飞书多维表格、项目与流程审批，实现跨工厂排产协同、质量闭环管理与跨时区项目透明协作。</p>
+            <div class="mt-4">
+              <p class="text-[11px] text-white/45 uppercase tracking-wider mb-2">高层分享</p>
+              <blockquote id="feat2-right-quote" class="feat-quote">
+                <span id="feat2-right-quote-text">飞书把我们的跨工厂协同从「人找事」变成了「事找人」，排产与质量数据真正拉通到了一张表里。</span>
+                <cite id="feat2-right-quote-cite">— 某高端装备企业 生产负责人</cite>
+              </blockquote>
+            </div>
+            <div id="feat2-right-tags" class="mt-4 flex flex-wrap gap-2 text-[11px] text-white/55">
               <span class="px-2 py-1 rounded-full border border-white/20">多工厂协同</span>
               <span class="px-2 py-1 rounded-full border border-white/20">MES × 飞书</span>
               <span class="px-2 py-1 rounded-full border border-white/20">全球项目管理</span>
             </div>
             <div class="mt-auto pt-5">
-              <button
-                class="inline-flex items-center gap-2 rounded-full px-4 py-2 text-xs md:text-sm text-white bg-[#1456F0] border border-[#1456F0] hover:bg-[#336DF4] hover:border-[#336DF4] transition">
-                立即参观样板间
+              <button class="inline-flex items-center gap-2 rounded-full px-4 py-2 text-xs md:text-sm text-white bg-[#1456F0] border border-[#1456F0] hover:bg-[#336DF4] hover:border-[#336DF4] transition">
+                前往案例
                 <span class="text-[11px]">↗</span>
               </button>
             </div>
-          </article>
+          </div>
+          <div class="w-px bg-white/10 flex-shrink-0 self-stretch hidden md:block" aria-hidden="true"></div>
+          <!-- 右侧：大图 + 简介 -->
+          <div class="flex-1 flex flex-col min-w-0">
+            <div class="aspect-[16/10] w-full bg-white/5 flex-shrink-0 overflow-hidden">
+              <img
+                src="assets/case-covers/上海万物新生信息科技集团有限公司.png"
+                alt="上海万物新生信息科技集团有限公司样板间"
+                class="w-full h-full object-cover"
+              />
+            </div>
+            <div class="pl-4 pr-6 py-4 border-t border-white/10">
+              <div class="min-w-0 flex-1 flex flex-col gap-1 items-end text-right">
+                <div class="flex items-center gap-2 justify-end">
+                  <span class="inline-flex items-center rounded-full border border-white/20 px-2 py-0.5 text-[11px] text-white/65">
+                    精选好房
+                  </span>
+                  <div id="feat2-left-logo" class="h-6 w-auto"></div>
+                </div>
+                <div id="feat2-left-title" class="font-extrabold text-[15px] text-white">制造业 · 华东 · 样板工厂</div>
+              </div>
+            </div>
+          </div>
         </div>
 
-        <!-- 第二行：What we offer 风格的 4 卡片 -->
-        <div class="mt-4 grid md:grid-cols-4 gap-4 md:gap-5 text-sm">
-          <article class="card-liquid-glass rounded-2xl border border-white/10 bg-gradient-to-br from-[#1456F0]/10 to-[#08090c] p-4 md:p-5 flex flex-col gap-3">
-            <h3 class="text-sm md:text-base font-semibold">总部协同中台</h3>
-            <p class="text-xs text-white/65">
-              用飞书连接集团总部与区域分公司，实现 OKR 对齐、项目透明与跨团队高频同步。
-            </p>
-          </article>
-          <article class="card-liquid-glass rounded-2xl border border-white/10 bg-gradient-to-br from-[#1456F0]/10 to-[#08090c] p-4 md:p-5 flex flex-col gap-3">
-            <h3 class="text-sm md:text-base font-semibold">门店与一线运营</h3>
-            <p class="text-xs text-white/65">
-              通过机器人与多维表格采集一线数据，沉淀运营驾驶舱与活动复盘模板。
-            </p>
-          </article>
-          <article class="card-liquid-glass rounded-2xl border border-white/10 bg-gradient-to-br from-[#1456F0]/10 to-[#08090c] p-4 md:p-5 flex flex-col gap-3">
-            <h3 class="text-sm md:text-base font-semibold">研发与项目协同</h3>
-            <p class="text-xs text-white/65">
-              以飞书文档、项目与知识库构建端到端研发协同与知识沉淀体系。
-            </p>
-          </article>
-          <article class="card-liquid-glass rounded-2xl border border-white/10 bg-gradient-to-br from-[#1456F0]/10 to-[#08090c] p-4 md:p-5 flex flex-col gap-3">
-            <h3 class="text-sm md:text-base font-semibold">管理仪表盘与决策</h3>
-            <p class="text-xs text-white/65">
-              将分散系统数据汇总到飞书，搭建管理视角的多维仪表盘与提醒机制。
-            </p>
-          </article>
-        </div>
       </div>
     </section>
   </main>
 
-  <!-- ECharts 逻辑 -->
+  <!-- ECharts 逻辑：地图点位从后端 API 拉取，省份高亮根据 customerPoints 的 city 动态生成 -->
   <script>
-    const customerPoints = [
-      { name: '北京', value: [116.40, 39.90], industry: '互联网 / 科技', customer: '某云服务独角兽', theme: '研发效能中台' },
-      { name: '上海', value: [121.47, 31.23], industry: '制造业', customer: '某智能制造集团', theme: '全球协同供应链' },
-      { name: '广州', value: [113.27, 23.13], industry: '零售连锁', customer: '全国连锁新消费品牌', theme: '门店运营驾驶舱' },
-      { name: '深圳', value: [114.05, 22.55], industry: '高科技制造', customer: '某电子龙头', theme: '工厂数字化车间' },
-      { name: '杭州', value: [120.19, 30.26], industry: '互联网 / 科技', customer: '某电商平台', theme: '跨团队敏捷协同' },
-      { name: '成都', value: [104.06, 30.67], industry: '消费品', customer: '某新锐品牌', theme: '全渠道拉通与共创' },
-      { name: '苏州', value: [120.62, 31.32], industry: '制造业', customer: '某高端装备龙头', theme: '项目与生产一体化' },
-      { name: '武汉', value: [114.31, 30.52], industry: '教育 / 医疗', customer: '区域龙头机构', theme: '运营与服务协同' },
-    ];
+    var customerPoints = [];
 
-    function createChinaMapOption(geoJson) {
+    // 城市名 -> 地图 GeoJSON 中的省份/直辖市名称（阿里云 100000_full 的 name 字段，可多写以兼容不同数据源）
+    var CITY_TO_REGION = {
+      '北京': ['北京', '北京市'], '北京市': ['北京', '北京市'],
+      '上海': ['上海', '上海市'], '上海市': ['上海', '上海市'],
+      '天津': ['天津', '天津市'], '天津市': ['天津', '天津市'],
+      '重庆': ['重庆', '重庆市'], '重庆市': ['重庆', '重庆市'],
+      '广州': ['广东省'], '深圳市': ['广东省'], '深圳': ['广东省'], '珠海': ['广东省'], '东莞': ['广东省'], '佛山': ['广东省'],
+      '杭州': ['浙江省'], '杭州市': ['浙江省'], '宁波': ['浙江省'], '温州': ['浙江省'],
+      '成都': ['四川省'], '成都市': ['四川省'],
+      '武汉': ['湖北省'], '武汉市': ['湖北省'],
+      '苏州': ['江苏省'], '南京市': ['江苏省'], '南京': ['江苏省'], '无锡': ['江苏省'], '常州': ['江苏省'],
+      '拉萨': ['西藏自治区', '西藏'], '拉萨市': ['西藏自治区', '西藏'],
+      '西安': ['陕西省'], '西安市': ['陕西省'],
+      '青岛': ['山东省'], '济南': ['山东省'], '烟台': ['山东省'],
+      '大连': ['辽宁省'], '沈阳': ['辽宁省'], '沈阳市': ['辽宁省'],
+      '长沙': ['湖南省'], '长沙市': ['湖南省'],
+      '郑州': ['河南省'], '郑州市': ['河南省'], '洛阳': ['河南省'],
+      '昆明': ['云南省'], '昆明市': ['云南省'],
+      '福州': ['福建省'], '厦门': ['福建省'], '泉州': ['福建省'],
+      '合肥': ['安徽省'], '合肥市': ['安徽省'],
+      '贵阳': ['贵州省'], '贵阳市': ['贵州省'],
+      '兰州': ['甘肃省'], '兰州市': ['甘肃省'],
+      '乌鲁木齐': ['新疆维吾尔自治区'], '乌鲁木齐市': ['新疆维吾尔自治区'],
+      '海口': ['海南省'], '海口市': ['海南省'],
+      '太原': ['山西省'], '太原市': ['山西省'],
+      '石家庄': ['河北省'], '保定': ['河北省'],
+      '南昌': ['江西省'], '南昌市': ['江西省'],
+      '哈尔滨': ['黑龙江省'], '哈尔滨市': ['黑龙江省']
+    };
+
+    function getHighlightRegionsFromPoints(points) {
+      var set = {};
+      var list = [];
+      (points || []).forEach(function (p) {
+        var city = (p && p.city) ? String(p.city).trim() : '';
+        if (!city) return;
+        var regions = CITY_TO_REGION[city] || CITY_TO_REGION[city.replace(/[省市]$/, '')] || CITY_TO_REGION[city + '市'];
+        if (regions && Array.isArray(regions)) {
+          regions.forEach(function (r) {
+            if (!set[r]) { set[r] = true; list.push(r); }
+          });
+        }
+      });
+      return list;
+    }
+
+    function createChinaMapOption(geoJson, points) {
+      var data = points || customerPoints;
+      var highlightNames = getHighlightRegionsFromPoints(data);
+      var blueStyle = { areaColor: 'rgba(20, 86, 240, 0.22)', borderColor: 'rgba(20, 86, 240, 0.5)', borderWidth: 1.2 };
+      var regions = highlightNames.map(function (name) {
+        return { name: name, itemStyle: blueStyle };
+      });
+      regions.push({ name: '南海诸岛', itemStyle: { areaColor: 'transparent', borderColor: 'transparent', borderWidth: 0 }, label: { show: false } });
+
       return {
         backgroundColor: '#0d1219',
         tooltip: {
@@ -578,12 +956,8 @@
           textStyle: { color: '#e5e7eb', fontSize: 12 },
           formatter: function (params) {
             if (params.seriesType === 'effectScatter' && params.data) {
-              const d = params.data;
-              return [
-                `<div style="font-weight:600;margin-bottom:4px;">${d.customer || d.name}</div>`,
-                `<div style="font-size:11px;opacity:.8;">${d.industry || ''}</div>`,
-                d.theme ? `<div style="font-size:11px;margin-top:4px;">${d.theme}</div>` : ''
-              ].join('');
+              var city = (params.data.city != null ? params.data.city : params.data.name) || '';
+              return city;
             }
             return params.name || '';
           }
@@ -591,7 +965,7 @@
         geo: {
           map: 'china',
           roam: true,
-          zoom: 1.1,
+          zoom: 2.0,
           layoutCenter: ['38%', '50%'],
           layoutSize: '100%',
           label: {
@@ -611,37 +985,23 @@
             },
             label: { color: '#e2e8f0' }
           },
-          regions: [
-            { name: '北京', itemStyle: { areaColor: 'rgba(20, 86, 240, 0.38)', borderColor: 'rgba(20, 86, 240, 0.7)', borderWidth: 1.2 } },
-            { name: '北京市', itemStyle: { areaColor: 'rgba(20, 86, 240, 0.38)', borderColor: 'rgba(20, 86, 240, 0.7)', borderWidth: 1.2 } },
-            { name: '上海', itemStyle: { areaColor: 'rgba(20, 86, 240, 0.38)', borderColor: 'rgba(20, 86, 240, 0.7)', borderWidth: 1.2 } },
-            { name: '上海市', itemStyle: { areaColor: 'rgba(20, 86, 240, 0.38)', borderColor: 'rgba(20, 86, 240, 0.7)', borderWidth: 1.2 } },
-            { name: '广东省', itemStyle: { areaColor: 'rgba(20, 86, 240, 0.38)', borderColor: 'rgba(20, 86, 240, 0.7)', borderWidth: 1.2 } },
-            { name: '浙江省', itemStyle: { areaColor: 'rgba(20, 86, 240, 0.38)', borderColor: 'rgba(20, 86, 240, 0.7)', borderWidth: 1.2 } },
-            { name: '四川省', itemStyle: { areaColor: 'rgba(20, 86, 240, 0.38)', borderColor: 'rgba(20, 86, 240, 0.7)', borderWidth: 1.2 } },
-            { name: '江苏省', itemStyle: { areaColor: 'rgba(20, 86, 240, 0.38)', borderColor: 'rgba(20, 86, 240, 0.7)', borderWidth: 1.2 } },
-            { name: '湖北省', itemStyle: { areaColor: 'rgba(20, 86, 240, 0.38)', borderColor: 'rgba(20, 86, 240, 0.7)', borderWidth: 1.2 } }
-          ]
+          regions: regions
         },
         series: [
           {
             name: '样板间分布',
             type: 'effectScatter',
             coordinateSystem: 'geo',
-            data: customerPoints,
-            symbolSize: 8,
+            data: data,
+            // 点位为透明填充发光
+            symbolSize: 10,
             showEffectOn: 'render',
-            rippleEffect: {
-              brushType: 'stroke',
-              color: '#1456F0',
-              scale: 3.5
-            },
             itemStyle: {
-              color: '#1456F0',
-              borderColor: 'rgba(255,255,255,0.4)',
-              borderWidth: 1,
-              shadowBlur: 12,
-              shadowColor: 'rgba(20, 86, 240, 0.5)'
+              color: 'rgba(20, 86, 240, 0.25)',
+              borderColor: 'rgba(191, 219, 254, 0.9)',
+              borderWidth: 1.2,
+              shadowBlur: 24,
+              shadowColor: 'rgba(20, 86, 240, 0.9)'
             },
             hoverAnimation: true,
             animationDuration: 2000,
@@ -664,11 +1024,32 @@
         chart.resize();
       });
 
-      fetch('https://geo.datav.aliyun.com/areas_v3/bound/geojson?code=100000_full')
-        .then(function (res) { return res.json(); })
+      var defaultPoints = [
+        { city: '北京', value: [116.40, 39.90], showroomName: '研发效能中台样板间', industry1: '互联网 / 科技', industry2: '云服务', cover: '', customer: '某云服务独角兽', inspiration: '研发效能与协作中台', plan: '研发效能中台' },
+        { city: '上海', value: [121.47, 31.23], showroomName: '全球协同供应链样板间', industry1: '制造业', industry2: '智能制造', cover: '', customer: '某智能制造集团', inspiration: '全球供应链协同', plan: '全球协同供应链' },
+        { city: '广州', value: [113.27, 23.13], showroomName: '门店运营驾驶舱样板间', industry1: '零售连锁', industry2: '新消费', cover: '', customer: '全国连锁新消费品牌', inspiration: '门店与一线运营数字化', plan: '门店运营驾驶舱' },
+        { city: '深圳', value: [114.05, 22.55], showroomName: '工厂数字化车间样板间', industry1: '高科技制造', industry2: '电子制造', cover: '', customer: '某电子龙头', inspiration: '工厂数字化与生产协同', plan: '工厂数字化车间' },
+        { city: '杭州', value: [120.19, 30.26], showroomName: '跨团队敏捷协同样板间', industry1: '互联网 / 科技', industry2: '电商', cover: '', customer: '某电商平台', inspiration: '敏捷协作与项目透明', plan: '跨团队敏捷协同' },
+        { city: '成都', value: [104.06, 30.67], showroomName: '全渠道拉通与共创样板间', industry1: '消费品', industry2: '新锐品牌', cover: '', customer: '某新锐品牌', inspiration: '全渠道与用户共创', plan: '全渠道拉通与共创' },
+        { city: '苏州', value: [120.62, 31.32], showroomName: '项目与生产一体化样板间', industry1: '制造业', industry2: '高端装备', cover: '', customer: '某高端装备龙头', inspiration: '全球工厂集群与项目管理', plan: '项目与生产一体化' },
+        { city: '武汉', value: [114.31, 30.52], showroomName: '运营与服务协同样板间', industry1: '教育 / 医疗', industry2: '区域龙头', cover: '', customer: '区域龙头机构', inspiration: '运营与服务协同', plan: '运营与服务协同' }
+      ];
+
+      var apiBase = (typeof location !== 'undefined' && location.origin && location.protocol !== 'file:') ? location.origin : '';
+
+      // 地图点位数据来自 GET /api/customer-points（失败时使用下方 defaultPoints）
+      function loadPoints() {
+        if (!apiBase) return Promise.resolve(defaultPoints);
+        return fetch(apiBase + '/api/customer-points').then(function (r) { return r.json(); }).catch(function () { return defaultPoints; });
+      }
+
+      loadPoints().then(function (points) {
+        customerPoints = points && points.length ? points : defaultPoints;
+        return fetch('https://geo.datav.aliyun.com/areas_v3/bound/geojson?code=100000_full');
+      }).then(function (res) { return res.json(); })
         .then(function (geoJson) {
           echarts.registerMap('china', geoJson);
-          const option = createChinaMapOption(geoJson);
+          var option = createChinaMapOption(geoJson, customerPoints);
           chart.setOption(option);
 
           var panel = document.getElementById('map-case-panel');
@@ -679,25 +1060,137 @@
 
           var placeholder = document.getElementById('case-card-placeholder');
           var content = document.getElementById('case-card-content');
+          var coverImg = document.getElementById('case-card-cover-img');
+          var coverWrap = document.getElementById('case-card-cover');
           var locationEl = document.getElementById('case-card-location');
           var titleEl = document.getElementById('case-card-title');
           var industryEl = document.getElementById('case-card-industry');
           var customerEl = document.getElementById('case-card-customer');
-          var themeEl = document.getElementById('case-card-theme');
+          var inspirationEl = document.getElementById('case-card-inspiration');
+          var inspirationTagsEl = document.getElementById('case-card-inspiration-tags');
+          var paginatorEl = document.getElementById('case-card-paginator');
+          var prevBtn = document.getElementById('case-card-prev');
+          var nextBtn = document.getElementById('case-card-next');
+          var pageInfoEl = document.getElementById('case-card-page-info');
+
+          var currentCaseIndex = 0;
+          var currentProvinceIndices = [];
+          var currentPageInProvince = 0;
+
+          function getProvinceKey(d) {
+            if (!d) return '';
+            return (d.province && String(d.province).trim()) || (d.city && String(d.city).trim()) || '';
+          }
+
+          function getIndicesOfSameProvince(clickedIdx) {
+            var d = customerPoints[clickedIdx];
+            var key = getProvinceKey(d);
+            if (!key) return [clickedIdx];
+            var list = [];
+            for (var i = 0; i < customerPoints.length; i++) {
+              if (getProvinceKey(customerPoints[i]) === key) list.push(i);
+            }
+            return list.length > 0 ? list : [clickedIdx];
+          }
+
+          function updatePaginator() {
+            var total = currentProvinceIndices.length;
+            if (paginatorEl) paginatorEl.classList.toggle('hidden', total <= 1);
+            if (pageInfoEl) pageInfoEl.textContent = (currentPageInProvince + 1) + ' / ' + total;
+            if (prevBtn) prevBtn.disabled = currentPageInProvince <= 0;
+            if (nextBtn) nextBtn.disabled = currentPageInProvince >= total - 1;
+          }
+
+          function setCaseByIndex(idx) {
+            var d = customerPoints[idx];
+            if (!d) return;
+            currentCaseIndex = idx;
+            var city = d.city || d.name || '';
+            var title = d.showroomName || d.theme || city;
+            var industry = d.industry1 ? (d.industry2 ? d.industry1 + '/' + d.industry2 : d.industry1) : (d.industry || '');
+            var intro = d.customer || d.intro || '';
+            var inspiration = d.inspiration || '';
+            if (locationEl) locationEl.textContent = city || 'Location';
+            if (titleEl) titleEl.textContent = title;
+            if (industryEl) industryEl.textContent = industry;
+            if (customerEl) customerEl.textContent = intro;
+
+            if (inspirationEl && inspirationTagsEl) {
+              var tags = [];
+              if (inspiration) {
+                var raw = String(inspiration).replace(/^[\u7075\u611f灵感][:：]\s*/i, '');
+                tags = raw
+                  .split(/[\n,，]/)
+                  .map(function (s) { return String(s).trim(); })
+                  .filter(function (s) { return s.length > 0; })
+                  .slice(0, 3);
+              }
+              if (tags.length > 0) {
+                inspirationTagsEl.innerHTML = tags.map(function (t) {
+                  return '<span class="case-tag">' +
+                    String(t)
+                      .replace(/&/g, '&amp;')
+                      .replace(/</g, '&lt;')
+                      .replace(/>/g, '&gt;')
+                      .replace(/"/g, '&quot;') +
+                    '</span>';
+                }).join('');
+                inspirationEl.classList.remove('hidden');
+              } else {
+                inspirationTagsEl.innerHTML = '';
+                inspirationEl.classList.add('hidden');
+              }
+            }
+
+            if (coverImg && coverWrap) {
+              if (d.cover) {
+                coverImg.src = d.cover;
+                coverImg.alt = title;
+                coverImg.classList.remove('hidden');
+              } else {
+                coverImg.src = '';
+                coverImg.classList.add('hidden');
+              }
+            }
+          }
+
+          function showCaseGroup(clickedIdx) {
+            currentProvinceIndices = getIndicesOfSameProvince(clickedIdx);
+            currentPageInProvince = currentProvinceIndices.indexOf(clickedIdx);
+            if (currentPageInProvince < 0) currentPageInProvince = 0;
+            setCaseByIndex(currentProvinceIndices[currentPageInProvince]);
+            updatePaginator();
+          }
+
+          if (prevBtn) prevBtn.addEventListener('click', function () {
+            if (currentPageInProvince <= 0) return;
+            currentPageInProvince--;
+            setCaseByIndex(currentProvinceIndices[currentPageInProvince]);
+            updatePaginator();
+          });
+          if (nextBtn) nextBtn.addEventListener('click', function () {
+            if (currentPageInProvince >= currentProvinceIndices.length - 1) return;
+            currentPageInProvince++;
+            setCaseByIndex(currentProvinceIndices[currentPageInProvince]);
+            updatePaginator();
+          });
 
           chart.on('click', function (params) {
             if (params.seriesType === 'effectScatter' && params.data) {
-              var d = params.data;
+              var idx = params.dataIndex;
               if (panel) panel.classList.remove('is-closed');
               if (placeholder) placeholder.classList.add('hidden');
               if (content) content.classList.remove('hidden');
-              if (locationEl) locationEl.textContent = d.name || 'Location';
-              if (titleEl) titleEl.textContent = (d.theme || d.name) + '';
-              if (industryEl) industryEl.textContent = d.industry || '';
-              if (customerEl) customerEl.textContent = d.customer || '';
-              if (themeEl) themeEl.textContent = d.theme ? '主题：' + d.theme : '';
+              showCaseGroup(idx);
             }
           });
+
+          if (customerPoints.length > 0) {
+            if (panel) panel.classList.remove('is-closed');
+            if (placeholder) placeholder.classList.add('hidden');
+            if (content) content.classList.remove('hidden');
+            showCaseGroup(0);
+          }
         })
         .catch(function (err) {
           console.error('加载中国地图数据失败:', err);
@@ -706,7 +1199,7 @@
   </script>
   <script>
     (function () {
-      var cards = document.querySelectorAll('.card-liquid-glass');
+      var cards = document.querySelectorAll('.card-liquid-glass, .intro-card');
       var parallaxStrength = 10;
       cards.forEach(function (card) {
         card.addEventListener('mousemove', function (e) {
@@ -724,6 +1217,100 @@
           card.style.setProperty('--mouse-x-px', '0px');
           card.style.setProperty('--mouse-y-px', '0px');
         });
+      });
+    })();
+  </script>
+  <!-- 精选样板间与四宫格：数据来自 GET /api/showrooms -->
+  <script>
+    (function () {
+      var apiBase = (typeof location !== 'undefined' && location.origin && location.protocol !== 'file:') ? location.origin : '';
+      if (!apiBase) return;
+      fetch(apiBase + '/api/showrooms')
+        .then(function (r) { return r.json(); })
+        .then(function (data) {
+          function setText(id, text) {
+            var el = document.getElementById(id);
+            if (el) el.textContent = String(text || '');
+          }
+          function setTags(elId, tags) {
+            var tagsEl = document.getElementById(elId);
+            if (!tagsEl) return;
+            var arr = Array.isArray(tags) ? tags : [];
+            tagsEl.innerHTML = arr.map(function (t) {
+              return '<span class="px-2 py-1 rounded-full border border-white/20">' + String(t).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;') + '</span>';
+            }).join('');
+          }
+
+          var feat = data.featured || {};
+          var left = feat.left || {};
+          var right = feat.right || {};
+          setText('feat-left-title', left.title);
+          setText('feat-right-region', right.region);
+          setText('feat-right-location', right.location);
+          setText('feat-right-title', right.title);
+          setText('feat-right-desc', right.desc);
+          setText('feat-right-quote-text', right.quoteText);
+          setText('feat-right-quote-cite', right.quoteCite);
+          setTags('feat-right-tags', right.tags);
+
+          var feat2 = data.featured2 || {};
+          var left2 = feat2.left || {};
+          var right2 = feat2.right || {};
+          setText('feat2-left-title', left2.title);
+          setText('feat2-right-region', right2.region);
+          setText('feat2-right-location', right2.location);
+          setText('feat2-right-title', right2.title);
+          setText('feat2-right-desc', right2.desc);
+          setText('feat2-right-quote-text', right2.quoteText);
+          setText('feat2-right-quote-cite', right2.quoteCite);
+          setTags('feat2-right-tags', right2.tags);
+
+        })
+        .catch(function () { /* 请求失败保留当前静态文案 */ });
+    })();
+  </script>
+  <script>
+    (function () {
+      function easeOutCubic(t) {
+        return 1 - Math.pow(1 - t, 3);
+      }
+      function animateCounterEased(el, target, duration) {
+        var startTime = null;
+        function step(timestamp) {
+          if (!startTime) startTime = timestamp;
+          var progress = Math.min((timestamp - startTime) / duration, 1);
+          var eased = easeOutCubic(progress);
+          var value = Math.round(target * eased);
+          el.textContent = value + '+';
+          if (progress < 1) requestAnimationFrame(step);
+        }
+        requestAnimationFrame(step);
+      }
+      document.addEventListener('DOMContentLoaded', function () {
+        var counters = document.querySelectorAll('[data-counter][data-target]');
+        counters.forEach(function (el) {
+          var target = parseInt(el.getAttribute('data-target'), 10);
+          if (!isNaN(target) && target > 0) animateCounterEased(el, target, 1200);
+        });
+      });
+    })();
+  </script>
+  <script>
+    (function () {
+      document.addEventListener('DOMContentLoaded', function () {
+        var btn = document.getElementById('btn-intro-toggle');
+        var section = document.getElementById('intro-section');
+        if (btn && section) {
+          btn.addEventListener('click', function () {
+            var hidden = section.classList.contains('hidden');
+            if (hidden) {
+              section.classList.remove('hidden');
+              section.scrollIntoView({ behavior: 'smooth', block: 'start' });
+            } else {
+              section.classList.add('hidden');
+            }
+          });
+        }
       });
     })();
   </script>
