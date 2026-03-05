@@ -555,8 +555,14 @@
         min-width: 0;
       }
     }
-    /* 桌面端不显示抽屉遮罩 */
+    /* 桌面端：地图区域更宽一点（向两侧多延伸） */
     @media (min-width: 769px) {
+      .map-section-inner {
+        margin-left: -1.5rem;
+        margin-right: -1.5rem;
+        width: calc(100% + 3rem);
+        max-width: calc(100vw - 3rem);
+      }
       .map-case-backdrop { display: none !important; }
     }
     /* 手机端导航菜单展开 */
