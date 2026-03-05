@@ -1189,10 +1189,11 @@
 
       var apiBase = (typeof location !== 'undefined' && location.origin && location.protocol !== 'file:') ? location.origin : '';
 
-      // 地图点位数据来自 GET /api/customer-points（失败时使用下方 defaultPoints）
+      // 地图点位：优先用后端 API，GitHub Pages 等无后端时回退到静态 data/customerPoints.json
       function loadPoints() {
-        if (!apiBase) return Promise.resolve(defaultPoints);
-        return fetch(apiBase + '/api/customer-points').then(function (r) { return r.json(); }).catch(function () { return defaultPoints; });
+        function fallback() { return fetch('data/customerPoints.json').then(function (r) { return r.ok ? r.json() : defaultPoints; }).catch(function () { return defaultPoints; }); }
+        if (!apiBase) return fallback();
+        return fetch(apiBase + '/api/customer-points').then(function (r) { return r.ok ? r.json() : Promise.reject(); }).catch(fallback);
       }
 
       // 使用 jsDelivr 提供的中国地图 GeoJSON，避免阿里云 DataV 的 Referer ACL 在 GitHub Pages 下 403
@@ -1399,14 +1400,16 @@
       });
     })();
   </script>
-  <!-- 精选样板间与四宫格：数据来自 GET /api/showrooms -->
+  <!-- 精选样板间与四宫格：优先 GET /api/showrooms，无后端时用静态 data/showrooms.json -->
   <script>
     (function () {
       var apiBase = (typeof location !== 'undefined' && location.origin && location.protocol !== 'file:') ? location.origin : '';
-      if (!apiBase) return;
-      fetch(apiBase + '/api/showrooms')
-        .then(function (r) { return r.json(); })
-        .then(function (data) {
+      function loadShowrooms() {
+        var fallback = function () { return fetch('data/showrooms.json').then(function (r) { return r.ok ? r.json() : {}; }).catch(function () { return {}; }); };
+        if (apiBase) return fetch(apiBase + '/api/showrooms').then(function (r) { return r.ok ? r.json() : Promise.reject(); }).catch(fallback);
+        return fallback();
+      }
+      loadShowrooms().then(function (data) {
           function setText(id, text) {
             var el = document.getElementById(id);
             if (el) el.textContent = String(text || '');
