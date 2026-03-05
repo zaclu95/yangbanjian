@@ -444,6 +444,68 @@
         inset 0 1px 0 rgba(255, 255, 255, 0.04),
         inset 0 -2px 10px rgba(0, 0, 0, 0.2);
     }
+
+    /* ========== 移动端适配 ========== */
+    @media (max-width: 768px) {
+      /* 移动端关闭 fixed 背景，避免 iOS 卡顿 */
+      body {
+        background-attachment: scroll;
+      }
+
+      /* 首屏：上下留白更紧凑，内容纵向排列 */
+      .hero-section {
+        min-height: auto;
+        padding-top: 5rem;
+        padding-bottom: 2.5rem;
+      }
+      .hero-inner {
+        flex-direction: column;
+        gap: 2.5rem;
+      }
+      .hero-bg-video {
+        top: 56px;
+        height: calc(100% + 56px);
+      }
+
+      /* LOGO 跑马灯：减小高度，避免挤占空间 */
+      .logo-marquee-item {
+        height: 1.9rem;
+        min-width: 5rem;
+        font-size: 10px;
+      }
+
+      /* 地图区：下方信息面板改为顺序排布，避免遮挡地图 */
+      .map-shell-glass {
+        padding: 0.75rem;
+      }
+      #china-map {
+        height: 380px;
+        min-height: 340px;
+      }
+      .map-case-panel {
+        position: static;
+        inset: auto;
+        width: 100%;
+        margin-top: 0.75rem;
+        height: auto;
+      }
+      .map-case-panel.is-closed {
+        transform: none;
+        opacity: 0;
+        pointer-events: none;
+        display: none;
+      }
+
+      /* 精选卡片：左右分栏在小屏保持竖排且留白舒适 */
+      #feat-card,
+      #feat2-card {
+        border-radius: 1.25rem;
+      }
+      #feat-card > div,
+      #feat2-card > div {
+        min-width: 0;
+      }
+    }
   </style>
 </head>
 <body class="min-h-screen overflow-x-hidden">
@@ -821,10 +883,10 @@
                 <span class="text-[11px]">↗</span>
               </button>
               <button class="inline-flex items-center gap-1.5 rounded-full px-3 py-1.5 text-[11px] md:text-xs text-white bg-white/10 border border-white/25 hover:bg-white/20 hover:border-white/40 transition">
-                教我怎么搭
+                点击查看教程
               </button>
               <button class="inline-flex items-center gap-1.5 rounded-full px-3 py-1.5 text-[11px] md:text-xs text-white bg-white/10 border border-white/25 hover:bg-white/20 hover:border-white/40 transition">
-                我要搭同款
+                获取同款模版
               </button>
             </div>
           </div>
@@ -852,10 +914,16 @@
               <span class="px-2 py-1 rounded-full border border-white/20">MES × 飞书</span>
               <span class="px-2 py-1 rounded-full border border-white/20">全球项目管理</span>
             </div>
-            <div class="mt-auto pt-5">
-              <button class="inline-flex items-center gap-2 rounded-full px-4 py-2 text-xs md:text-sm text-white bg-[#1456F0] border border-[#1456F0] hover:bg-[#336DF4] hover:border-[#336DF4] transition">
+            <div class="mt-auto pt-5 flex flex-wrap items-center gap-3 justify-start">
+              <button class="inline-flex items-center gap-1.5 rounded-full px-3 py-1.5 text-[11px] md:text-xs text-white bg-[#1456F0] border border-[#1456F0] hover:bg-[#336DF4] hover:border-[#336DF4] transition">
                 前往案例
                 <span class="text-[11px]">↗</span>
+              </button>
+              <button class="inline-flex items-center gap-1.5 rounded-full px-3 py-1.5 text-[11px] md:text-xs text-white bg-white/10 border border-white/25 hover:bg-white/20 hover:border-white/40 transition">
+                点击查看教程
+              </button>
+              <button class="inline-flex items-center gap-1.5 rounded-full px-3 py-1.5 text-[11px] md:text-xs text-white bg-white/10 border border-white/25 hover:bg-white/20 hover:border-white/40 transition">
+                获取同款模版
               </button>
             </div>
           </div>
